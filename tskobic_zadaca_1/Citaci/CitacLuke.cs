@@ -1,6 +1,7 @@
 ﻿using System.Globalization;
 using tskobic_zadaca_1.Modeli;
 using tskobic_zadaca_1.Singleton;
+using tskobic_zadaca_1.Static;
 
 namespace tskobic_zadaca_1.FactoryMethod
 {
@@ -11,27 +12,26 @@ namespace tskobic_zadaca_1.FactoryMethod
             string[] retci = File.ReadAllLines(putanja);
             string[] celije = retci[1].Split(";");
 
+
+            if (celije.Length != 8)
+            {
+                Ispis.GreskaBrojCelija(retci[1], putanja);
+            }
             for (int i = 1; i < celije.Length; i++)
             {
                 if (i == 1 || i == 2)
                 {
-                    if (!double.TryParse(celije[i], NumberStyles.Float, new CultureInfo("hr-hr"), out double rezultat))
+                    if (!Validacija.ProvjeriPretvorbuUDouble(celije[i]))
                     {
-                        Console.WriteLine($"ERROR: Neispravan redak {retci[1]} u datoteci {putanja}."
-                            + $" Ćeliju {celije[i]} nije moguće pretvoriti u broj. "
-                            + $"Broj greške: {++BrodskaLukaSingleton.Instanca().BrojGreski}");
-
+                        Ispis.GreskaPretvorbeUDouble(retci[1], celije[i], putanja);
                         return;
                     }
                 }
                 if (i > 2 && i < 7)
                 {
-                    if (!int.TryParse(celije[i], out int rezultat))
+                    if (!Validacija.ProvjeriPretvorbuUInt(celije[i]))
                     {
-                        Console.WriteLine($"ERROR: Neispravan redak {retci[1]} u datoteci {putanja}."
-                            + $" Ćeliju {celije[i]} nije moguće pretvoriti u broj. "
-                            + $"Broj greške: {++BrodskaLukaSingleton.Instanca().BrojGreski}");
-
+                        Ispis.GreskaPretvorbeUInt(retci[1], celije[i], putanja);
                         return;
                     }
                 }
@@ -47,8 +47,7 @@ namespace tskobic_zadaca_1.FactoryMethod
             BrodskaLuka brodskaLuka = new BrodskaLuka(celije[0], gs, gd, dubinaLuke, putnickiVezovi, poslovniVezovi, ostaliVezovi);
             BrodskaLukaSingleton brodskaLukaSingleton = BrodskaLukaSingleton.Instanca();
             brodskaLukaSingleton.BrodskaLuka = brodskaLuka;
-            brodskaLukaSingleton.VirtualnoVrijeme = DateTime.Parse(celije[7]);
+            brodskaLukaSingleton.VirtualniSat.VirtualnoVrijeme = DateTime.Parse(celije[7]);
         }
-
     }
 }

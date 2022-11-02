@@ -26,6 +26,8 @@ namespace tskobic_zadaca_1.Modeli
 
         public List<Brod> Brodovi { get; set; }
 
+        public List<Raspored> Rasporedi { get; set; }
+
         public BrodskaLuka(string naziv, double gpsSirina, double gpsVisina, int dubinaLuke,
             int putnickiVezovi, int poslovniVezovi, int ostaliVezovi)
         {
@@ -38,6 +40,7 @@ namespace tskobic_zadaca_1.Modeli
             OstaliVezovi = ostaliVezovi;
             Vezovi = new List<Vez>();
             Brodovi = new List<Brod>();
+            Rasporedi = new List<Raspored>();
         }
     }
 }

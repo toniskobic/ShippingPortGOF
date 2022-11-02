@@ -13,12 +13,13 @@ namespace tskobic_zadaca_1.Singleton
 
         public BrodskaLuka BrodskaLuka { get; set; }
 
-        public DateTime VirtualnoVrijeme { get; set; }
+        public VirtualniSat VirtualniSat { get; set; }
 
         public int BrojGreski { get; set; }
 
         private BrodskaLukaSingleton()
         {
+            VirtualniSat = new VirtualniSat();
             BrojGreski = 0;
         }
 

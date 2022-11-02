@@ -12,13 +12,13 @@ namespace tskobic_zadaca_1.Modeli
 
         public int IDBrod { get; set; }
 
-        public int[] DaniUTjednu { get; set; } = new int[7];
+        public List<DayOfWeek> DaniUTjednu { get; set; }
 
-        public DateTime VrijemeOd { get; set; }
+        public TimeOnly VrijemeOd { get; set; }
 
-        public DateTime VrijemeDo { get; set; }
+        public TimeOnly VrijemeDo { get; set; }
 
-        public Raspored(int idVez, int idBrod, int[] daniUTjednu, DateTime vrijemeOd, DateTime vrijemeDo)
+        public Raspored(int idVez, int idBrod, List<DayOfWeek> daniUTjednu, TimeOnly vrijemeOd, TimeOnly vrijemeDo)
         {
             IDVez = idVez;
             IDBrod = idBrod;

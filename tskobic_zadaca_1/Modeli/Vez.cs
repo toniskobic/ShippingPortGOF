@@ -22,6 +22,8 @@ namespace tskobic_zadaca_1.Modeli
 
         public int MaksDubina { get; set; }
 
+        public bool Zauzet { get; set; }
+
         public Vez(int id, string oznakaVeza, string vrsta,
             int cijenaPoSatu, int maksDuljina, int maksSirina, int maksDubina)
         {
@@ -32,6 +34,7 @@ namespace tskobic_zadaca_1.Modeli
             MaksDuljina = maksDuljina;
             MaksSirina = maksSirina;
             MaksDubina = maksDubina;
+            Zauzet = false;
         }
     }
 }

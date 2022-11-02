@@ -1,13 +1,12 @@
 ﻿using System.Globalization;
 using tskobic_zadaca_1.Modeli;
 using tskobic_zadaca_1.Singleton;
+using tskobic_zadaca_1.Static;
 
 namespace tskobic_zadaca_1.Citaci
 {
     public class CitacBrodova
     {
-        private readonly string[] vrsteBrodova = { "TR", "KA", "KL", "KR", "RI", "TE", "JA", "BR", "RO" };
-
         public List<Brod> ProcitajPodatke(string putanja)
         {
             string[] retci = File.ReadAllLines(putanja);
@@ -20,9 +19,7 @@ namespace tskobic_zadaca_1.Citaci
 
                 if (celije.Length != 11)
                 {
-                    Console.WriteLine($"ERROR: Neispravan redak {retci[i]} u datoteci {putanja}."
-                        + $" Broj ćelija je neispravan. "
-                        + $"Broj greške: {++BrodskaLukaSingleton.Instanca().BrojGreski}");
+                    Ispis.GreskaBrojCelija(retci[i], putanja);
                 }
                 else
                 {
@@ -32,33 +29,24 @@ namespace tskobic_zadaca_1.Citaci
                     {
                         if (j == 0 || j > 7)
                         {
-                            if (!int.TryParse(celije[j], out int rezultat))
+                            if (!Validacija.ProvjeriPretvorbuUInt(celije[j]))
                             {
                                 greska = true;
-                                Console.WriteLine($"ERROR: Neispravan redak {retci[i]} u datoteci {putanja}."
-                                    + $" Ćeliju {celije[j]} nije moguće pretvoriti u broj. "
-                                    + $"Broj greške: {++BrodskaLukaSingleton.Instanca().BrojGreski}");
+                                Ispis.GreskaPretvorbeUInt(retci[i], celije[j], putanja);
                                 break;
                             }
                         }
-                        if (j == 3 && !vrsteBrodova.Contains(celije[j]))
+                        if (j == 3 && !Konstante.VrsteBrodova.Contains(celije[j]))
                         {
                             greska = true;
-                            Console.WriteLine($"ERROR: Neispravan redak {retci[i]} u datoteci {putanja}."
-                                + $" Ćelija {celije[j]} ima nedozvoljenu vrstu broda. "
-                                + $"Broj greške: {++BrodskaLukaSingleton.Instanca().BrojGreski}");
+                            Ispis.GreskaNedozvoljenaVrsta(retci[i], celije[j], putanja, "brod");
                             break;
                         }
-                        if (j > 3 && j < 8)
+                        if (j > 3 && j < 8 && !Validacija.ProvjeriPretvorbuUDouble(celije[j]))
                         {
-                            if (!double.TryParse(celije[j], NumberStyles.Float, new CultureInfo("hr-hr"), out double rezultat))
-                            {
-                                greska = true;
-                                Console.WriteLine($"ERROR: Neispravan redak {retci[i]} u datoteci {putanja}."
-                                    + $" Ćeliju {celije[j]} nije moguće pretvoriti u broj. "
-                                    + $"Broj greške: {++BrodskaLukaSingleton.Instanca().BrojGreski}");
-                                break;
-                            }
+                            greska = true;
+                            Ispis.GreskaPretvorbeUDouble(retci[i], celije[j], putanja);
+                            break;
                         }
                     }
                     if (!greska)

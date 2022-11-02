@@ -1,5 +1,5 @@
 ﻿using tskobic_zadaca_1.Modeli;
-using tskobic_zadaca_1.Singleton;
+using tskobic_zadaca_1.Static;
 
 namespace tskobic_zadaca_1.Citaci
 {
@@ -17,9 +17,7 @@ namespace tskobic_zadaca_1.Citaci
 
                 if (celije.Length != 7)
                 {
-                    Console.WriteLine($"ERROR: Neispravan redak {retci[i]} u datoteci {putanja}."
-                        + $" Broj ćelija je neispravan. "
-                        + $"Broj greške: {++BrodskaLukaSingleton.Instanca().BrojGreski}");
+                    Ispis.GreskaBrojCelija(retci[i], putanja);
                 }
                 else
                 {
@@ -29,14 +27,18 @@ namespace tskobic_zadaca_1.Citaci
                     {
                         if (j == 0 || j > 2)
                         {
-                            if (!int.TryParse(celije[j], out int rezultat))
+                            if (!Validacija.ProvjeriPretvorbuUInt(celije[j]))
                             {
                                 greska = true;
-                                Console.WriteLine($"ERROR: Neispravan redak {retci[i]} u datoteci {putanja}."
-                                    + $" Ćeliju {celije[j]} nije moguće pretvoriti u broj. "
-                                    + $"Broj greške: {++BrodskaLukaSingleton.Instanca().BrojGreski}");
+                                Ispis.GreskaPretvorbeUInt(retci[i], celije[j], putanja);
                                 break;
                             }
+                        }
+                        if (j == 2 && !Konstante.VrsteVezova.Contains(celije[j]))
+                        {
+                            greska = true;
+                            Ispis.GreskaNedozvoljenaVrsta(retci[i], celije[j], putanja, "vez");
+                            break;
                         }
                     }
                     if (!greska)
@@ -47,44 +49,10 @@ namespace tskobic_zadaca_1.Citaci
                         int maksSirina = int.Parse(celije[5]);
                         int maksDubina = int.Parse(celije[6]);
 
-                        BrodskaLukaSingleton brodskaLukaSingleton = BrodskaLukaSingleton.Instanca();
-                        BrodskaLuka brodskaLuka = brodskaLukaSingleton.BrodskaLuka;
-                        switch (celije[2])
+                        if (Validacija.ProvjeriVezove(celije[2]))
                         {
-                            case "PU":
-                                {
-                                    if (brodskaLuka.PutnickiVezovi > brodskaLuka.Vezovi.FindAll(x => x.Vrsta == "PU").Count)
-                                    {
-                                        vezovi.Add(new Vez(id, celije[1], celije[2],
-                                            cijenaPoSatu, maksDuljina, maksSirina, maksDubina));
-                                    }
-                                    break;
-                                }
-                            case "PO":
-                                {
-                                    if (brodskaLuka.PoslovniVezovi > brodskaLuka.Vezovi.FindAll(x => x.Vrsta == "PO").Count)
-                                    {
-                                        vezovi.Add(new Vez(id, celije[1], celije[2],
-                                            cijenaPoSatu, maksDuljina, maksSirina, maksDubina));
-                                    }
-                                    break;
-                                }
-                            case "OS":
-                                {
-                                    if (brodskaLuka.OstaliVezovi > brodskaLuka.Vezovi.FindAll(x => x.Vrsta == "OS").Count)
-                                    {
-                                        vezovi.Add(new Vez(id, celije[1], celije[2],
-                                            cijenaPoSatu, maksDuljina, maksSirina, maksDubina));
-                                    }
-                                    break;
-                                }
-                            default:
-                                {
-                                    Console.WriteLine($"ERROR: Neispravna redak {retci[i]} u datoteci {putanja}."
-                                    + $" Ćelija {celije[2]} ima nedozvoljenu vrstu veza."
-                                    + $"Broj greške: {++BrodskaLukaSingleton.Instanca().BrojGreski}");
-                                }
-                                break;
+                            vezovi.Add(new Vez(id, celije[1], celije[2],
+                                cijenaPoSatu, maksDuljina, maksSirina, maksDubina));
                         }
                     }
                 }
