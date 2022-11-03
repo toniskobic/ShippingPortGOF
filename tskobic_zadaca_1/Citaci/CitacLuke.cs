@@ -1,14 +1,19 @@
 ﻿using System.Globalization;
+using tskobic_zadaca_1.Citaci;
 using tskobic_zadaca_1.Modeli;
 using tskobic_zadaca_1.Singleton;
 using tskobic_zadaca_1.Static;
 
 namespace tskobic_zadaca_1.FactoryMethod
 {
-    public class CitacLuke
+    public class CitacLuke : ICitac
     {
         public void ProcitajPodatke(string putanja)
         {
+            if(!File.Exists(putanja))
+            {
+                return;
+            }
             string[] retci = File.ReadAllLines(putanja);
             string[] celije = retci[1].Split(";");
 
@@ -21,20 +26,22 @@ namespace tskobic_zadaca_1.FactoryMethod
             {
                 if (i == 1 || i == 2)
                 {
-                    if (!Validacija.ProvjeriPretvorbuUDouble(celije[i]))
+                    if (!Utils.ProvjeriPretvorbuUDouble(celije[i]))
                     {
                         Ispis.GreskaPretvorbeUDouble(retci[1], celije[i], putanja);
                         return;
                     }
                 }
-                if (i > 2 && i < 7)
+                if (i > 2 && i < 7 && !Utils.ProvjeriPretvorbuUInt(celije[i]))
                 {
-                    if (!Validacija.ProvjeriPretvorbuUInt(celije[i]))
-                    {
-                        Ispis.GreskaPretvorbeUInt(retci[1], celije[i], putanja);
-                        return;
-                    }
+                    Ispis.GreskaPretvorbeUInt(retci[1], celije[i], putanja);
+                    return;
                 }
+            }
+            if (!Utils.ProvjeriPretvorbuUDatum(celije[7], out DateTime virtualnoVrijeme))
+            {
+                Ispis.GreskaPretvorbeUDatum(retci[1], celije[7], putanja);
+                return;
             }
 
             double gs = double.Parse(celije[1], new CultureInfo("hr-hr"));
@@ -45,9 +52,9 @@ namespace tskobic_zadaca_1.FactoryMethod
             int ostaliVezovi = int.Parse(celije[6]);
 
             BrodskaLuka brodskaLuka = new BrodskaLuka(celije[0], gs, gd, dubinaLuke, putnickiVezovi, poslovniVezovi, ostaliVezovi);
-            BrodskaLukaSingleton brodskaLukaSingleton = BrodskaLukaSingleton.Instanca();
-            brodskaLukaSingleton.BrodskaLuka = brodskaLuka;
-            brodskaLukaSingleton.VirtualniSat.VirtualnoVrijeme = DateTime.Parse(celije[7]);
+            BrodskaLukaSingleton bls = BrodskaLukaSingleton.Instanca();
+            bls.BrodskaLuka = brodskaLuka;
+            bls.VirtualniSat.VirtualnoVrijeme = virtualnoVrijeme;
         }
     }
 }

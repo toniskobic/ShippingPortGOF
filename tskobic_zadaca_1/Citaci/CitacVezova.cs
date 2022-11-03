@@ -1,14 +1,18 @@
 ﻿using tskobic_zadaca_1.Modeli;
+using tskobic_zadaca_1.Singleton;
 using tskobic_zadaca_1.Static;
 
 namespace tskobic_zadaca_1.Citaci
 {
-    public class CitacVezova
+    public class CitacVezova : ICitac
     {
-        public List<Vez> ProcitajPodatke(string putanja)
+        public void ProcitajPodatke(string putanja)
         {
+            if (!File.Exists(putanja))
+            {
+                return;
+            }
             string[] retci = File.ReadAllLines(putanja);
-            List<Vez> vezovi = new List<Vez>();
 
             for (int i = 1; i < retci.Length; i++)
             {
@@ -27,7 +31,7 @@ namespace tskobic_zadaca_1.Citaci
                     {
                         if (j == 0 || j > 2)
                         {
-                            if (!Validacija.ProvjeriPretvorbuUInt(celije[j]))
+                            if (!Utils.ProvjeriPretvorbuUInt(celije[j]))
                             {
                                 greska = true;
                                 Ispis.GreskaPretvorbeUInt(retci[i], celije[j], putanja);
@@ -49,16 +53,16 @@ namespace tskobic_zadaca_1.Citaci
                         int maksSirina = int.Parse(celije[5]);
                         int maksDubina = int.Parse(celije[6]);
 
-                        if (Validacija.ProvjeriVezove(celije[2]))
+                        BrodskaLukaSingleton bls = BrodskaLukaSingleton.Instanca();
+                        if (!bls.BrodskaLuka.Vezovi.Exists(x => x.ID == id)
+                            && bls.BrodskaLuka.DubinaLuke >= maksDubina && Utils.ProvjeriVezove(celije[2]))
                         {
-                            vezovi.Add(new Vez(id, celije[1], celije[2],
+                            bls.BrodskaLuka.Vezovi.Add(new Vez(id, celije[1], celije[2],
                                 cijenaPoSatu, maksDuljina, maksSirina, maksDubina));
                         }
                     }
                 }
             }
-
-            return vezovi;
         }
     }
 }

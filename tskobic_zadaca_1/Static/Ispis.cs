@@ -32,6 +32,13 @@ namespace tskobic_zadaca_1.Static
                 + $"Broj greške: {++BrodskaLukaSingleton.Instanca().BrojGreski}");
         }
 
+        public static void GreskaPretvorbeUDatum(string redak, string celija, string putanja)
+        {
+            Console.WriteLine($"ERROR: Neispravan redak '{redak}' u datoteci '{putanja}'."
+                + $" Ćeliju '{celija}' nije moguće pretvoriti u datum. "
+                + $"Broj greške: {++BrodskaLukaSingleton.Instanca().BrojGreski}");
+        }
+
         public static void GreskaBrojCelija(string redak, string putanja)
         {
             Console.WriteLine($"ERROR: Neispravan redak '{redak}' u datoteci '{putanja}'."
@@ -43,6 +50,12 @@ namespace tskobic_zadaca_1.Static
         {
             Console.WriteLine($"ERROR: Neispravan redak '{redak}' u datoteci '{putanja}'."
                 + $" Ćelija '{celija}' ima {vrsta} nedozvoljene vrste."
+                + $"Broj greške: {++BrodskaLukaSingleton.Instanca().BrojGreski}");
+        }
+
+        public static void GreskaInicijalizacije()
+        {
+            Console.WriteLine($"ERROR: Greška prilikom inicijalizacije."
                 + $"Broj greške: {++BrodskaLukaSingleton.Instanca().BrojGreski}");
         }
 
@@ -60,6 +73,16 @@ namespace tskobic_zadaca_1.Static
         public static void GreskaNaredba()
         {
             Console.WriteLine("ERROR: Neispravno unesena naredba!");
+        }
+
+        public static void Vez(string id, string oznaka, string vrsta, string status)
+        {
+            Console.WriteLine(String.Format("|{0,10}|{1,10}|{2,10}|{3,10}|", id, oznaka, vrsta, status));
+        }
+
+        public static void Zaglavlje(string naslov)
+        {
+            Console.WriteLine($"----------------{naslov}----------------");
         }
     }
 }

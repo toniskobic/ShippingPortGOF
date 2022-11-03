@@ -1,16 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace tskobic_zadaca_1.Modeli
+﻿namespace tskobic_zadaca_1.Modeli
 {
     public class Vez
     {
         public int ID { get; set; }
 
-        public string OznakaVeza { get; set; }
+        public string Oznaka { get; set; }
 
         public string Vrsta { get; set; }
 
@@ -22,19 +16,16 @@ namespace tskobic_zadaca_1.Modeli
 
         public int MaksDubina { get; set; }
 
-        public bool Zauzet { get; set; }
-
-        public Vez(int id, string oznakaVeza, string vrsta,
+        public Vez(int id, string oznaka, string vrsta,
             int cijenaPoSatu, int maksDuljina, int maksSirina, int maksDubina)
         {
             ID = id;
-            OznakaVeza = oznakaVeza;
+            Oznaka = oznaka;
             Vrsta = vrsta;
             CijenaPoSatu = cijenaPoSatu;
             MaksDuljina = maksDuljina;
             MaksSirina = maksSirina;
             MaksDubina = maksDubina;
-            Zauzet = false;
         }
     }
 }

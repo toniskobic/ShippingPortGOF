@@ -4,13 +4,16 @@ using tskobic_zadaca_1.Static;
 
 namespace tskobic_zadaca_1.Citaci
 {
-    public class CitacRasporeda
+    public class CitacRasporeda : ICitac
     {
         public void ProcitajPodatke(string putanja)
         {
+            if (!File.Exists(putanja))
+            {
+                return;
+            }
             string[] retci = File.ReadAllLines(putanja);
-            List<Raspored> rasporedi = new List<Raspored>();
-
+            
             for (int i = 1; i < retci.Length; i++)
             {
                 string[] celije = retci[i].Split(";");
@@ -74,49 +77,15 @@ namespace tskobic_zadaca_1.Citaci
                     BrodskaLukaSingleton bls = BrodskaLukaSingleton.Instanca();
                     Brod? brod = bls.BrodskaLuka.Brodovi.Find(x => x.ID == idBrod);
                     Vez? vez = bls.BrodskaLuka.Vezovi.Find(x => x.ID == idVez);
-                    if (brod != null && vez != null && ProvjeriBrodIVez(brod, vez))
+                    if (brod != null && vez != null && Utils.ProvjeriBrodIVez(brod, vez)
+                        && !bls.BrodskaLuka.Rasporedi.Exists(x => x.IDBrod == brod.ID && x.IDVez == vez.ID
+                        && daniUTjednu.Any(z => x.DaniUTjednu.Any(y => y == z)
+                        && (vrijemeOd <= x.VrijemeDo && x.VrijemeOd <= vrijemeDo))))
                     {
-                        Raspored? raspored = bls.BrodskaLuka.Rasporedi.Find(x => x.DaniUTjednu.SequenceEqual(daniUTjednu)
-                        && x.VrijemeOd == vrijemeOd && x.VrijemeDo == vrijemeDo);
-                        if (raspored == null)
-                        {
-                            bls.BrodskaLuka.Rasporedi.Add(new Raspored(idVez, idBrod, daniUTjednu, vrijemeOd, vrijemeDo));
-                        }
+                        bls.BrodskaLuka.Rasporedi.Add(new Raspored(idVez, idBrod, daniUTjednu, vrijemeOd, vrijemeDo));
                     }
                 }
             }
-        }
-
-        public bool ProvjeriBrodIVez(Brod brod, Vez vez)
-        {
-            bool provjera = false;
-            string[]? brodovi = null;
-            switch (vez.Vrsta)
-            {
-                case "PU":
-                    {
-                        brodovi = Konstante.PutnickiBrodovi;
-                        break;
-                    }
-                case "PO":
-                    {
-                        brodovi = Konstante.PoslovniBrodovi;
-                        break;
-                    }
-                case "OS":
-                    {
-                        brodovi = Konstante.OstaliBrodovi;
-                        break;
-                    }
-            }
-            if (brodovi!.Contains(brod.Vrsta)
-                    && vez.MaksDubina >= brod.Gaz && vez.MaksSirina >= brod.Sirina && vez.MaksDuljina >= brod.Duljina)
-            {
-                provjera = true;
-
-            }
-
-            return provjera;
         }
     }
 }

@@ -5,12 +5,15 @@ using tskobic_zadaca_1.Static;
 
 namespace tskobic_zadaca_1.Citaci
 {
-    public class CitacBrodova
+    public class CitacBrodova : ICitac
     {
-        public List<Brod> ProcitajPodatke(string putanja)
+        public void ProcitajPodatke(string putanja)
         {
+            if (!File.Exists(putanja))
+            {
+                return;
+            }
             string[] retci = File.ReadAllLines(putanja);
-            List<Brod> brodovi = new List<Brod>();
 
             for (int i = 1; i < retci.Length; i++)
             {
@@ -29,7 +32,7 @@ namespace tskobic_zadaca_1.Citaci
                     {
                         if (j == 0 || j > 7)
                         {
-                            if (!Validacija.ProvjeriPretvorbuUInt(celije[j]))
+                            if (!Utils.ProvjeriPretvorbuUInt(celije[j]))
                             {
                                 greska = true;
                                 Ispis.GreskaPretvorbeUInt(retci[i], celije[j], putanja);
@@ -42,7 +45,7 @@ namespace tskobic_zadaca_1.Citaci
                             Ispis.GreskaNedozvoljenaVrsta(retci[i], celije[j], putanja, "brod");
                             break;
                         }
-                        if (j > 3 && j < 8 && !Validacija.ProvjeriPretvorbuUDouble(celije[j]))
+                        if (j > 3 && j < 8 && !Utils.ProvjeriPretvorbuUDouble(celije[j]))
                         {
                             greska = true;
                             Ispis.GreskaPretvorbeUDouble(retci[i], celije[j], putanja);
@@ -60,16 +63,17 @@ namespace tskobic_zadaca_1.Citaci
                         int kapacitetOsobnihVozila = int.Parse(celije[9]);
                         int kapacitetTereta = int.Parse(celije[10]);
 
-                        Brod brod = new Brod(id, celije[1], celije[2], celije[3],
-                            duljina, sirina, gaz, maksBrzina, kapacitetPutnika,
-                            kapacitetOsobnihVozila, kapacitetTereta);
-                        brodovi.Add(brod);
+                        BrodskaLukaSingleton bls = BrodskaLukaSingleton.Instanca();
+                        if (!bls.BrodskaLuka.Brodovi.Exists(x => x.ID == id) && bls.BrodskaLuka.DubinaLuke > gaz)
+                        {
+                            Brod brod = new Brod(id, celije[1], celije[2], celije[3],
+                                duljina, sirina, gaz, maksBrzina, kapacitetPutnika,
+                                kapacitetOsobnihVozila, kapacitetTereta);
+                            bls.BrodskaLuka.Brodovi.Add(brod);
+                        }
                     }
                 }
             }
-
-            return brodovi;
         }
-
     }
 }

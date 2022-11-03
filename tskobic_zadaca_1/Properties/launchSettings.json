@@ -7,6 +7,10 @@
     "neispravni_argumenti": {
       "commandName": "Project",
       "commandLineArgs": "-v DZ_1_vez.csv -r DZ_1_raspored.csv -b DZ_1_brod.csv"
+    },
+    "nepostojece_datoteke": {
+      "commandName": "Project",
+      "commandLineArgs": "-l DZ_1_lukadasd.csv -v DZ_1_veadadz.csv -r DZ_1_raspodadasred.csv -b DZ_1_brdadaod.csv"
     }
   }
 }

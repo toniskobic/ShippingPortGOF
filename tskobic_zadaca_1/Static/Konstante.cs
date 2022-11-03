@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace tskobic_zadaca_1.Static
+﻿namespace tskobic_zadaca_1.Static
 {
     public static class Konstante
     {
@@ -14,7 +8,7 @@ namespace tskobic_zadaca_1.Static
 
         public static string[] PutnickiBrodovi { get; } = { "TR", "KA", "KL", "KR" };
 
-        public static string[] PoslovniBrodovi { get; } = { "RI", "TE", };
+        public static string[] PoslovniBrodovi { get; } = { "RI", "TE" };
 
         public static string[] OstaliBrodovi { get; } = { "JA", "BR", "RO" };
     }
