@@ -1,0 +1,16 @@
+{
+  "profiles": {
+    "tskobic_zadaca_2": {
+      "commandName": "Project",
+      "commandLineArgs": "-l DZ_2_luka.csv -v DZ_2_vez.csv -r DZ_2_raspored.csv -b DZ_2_brod.csv"
+    },
+    "neispravni_argumenti": {
+      "commandName": "Project",
+      "commandLineArgs": "-v DZ_2_vez.csv -r DZ_2_raspored.csv -b DZ_2_brod.csv"
+    },
+    "nepostojece_datoteke": {
+      "commandName": "Project",
+      "commandLineArgs": "-l DZ_2_lukadasd.csv -v DZ_2_veadadz.csv -r DZ_2_raspodadasred.csv -b DZ_2_brdadaod.csv"
+    }
+  }
+}
