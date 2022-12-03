@@ -39,6 +39,12 @@ namespace tskobic_zadaca_2.Static
                 + $"Broj greške: {++BrodskaLukaSingleton.Instanca().BrojGreski}");
         }
 
+        public static void GreskaNeispravanInformativniRedak(string redak, string putanja)
+        {
+            Console.WriteLine($"ERROR: Neispravan prvi informativni redak '{redak}' u datoteci '{putanja}'."
+                + $" Broj greške: {++BrodskaLukaSingleton.Instanca().BrojGreski}");
+        }
+
         public static void GreskaBrojCelija(string redak, string putanja)
         {
             Console.WriteLine($"ERROR: Neispravan redak '{redak}' u datoteci '{putanja}'."

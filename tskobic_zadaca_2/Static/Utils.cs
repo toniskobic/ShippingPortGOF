@@ -8,12 +8,12 @@ namespace tskobic_zadaca_2.Static
     {
         public static bool ProvjeriPretvorbuUDouble(string celija)
         {
-            return double.TryParse(celija, NumberStyles.Float, new CultureInfo("hr-hr"), out double rezultat);
+            return double.TryParse(celija, NumberStyles.Float, new CultureInfo("hr-hr"), out _);
         }
 
         public static bool ProvjeriPretvorbuUInt(string celija)
         {
-            return int.TryParse(celija, out int rezultat);
+            return int.TryParse(celija, out _);
         }
 
         public static bool ProvjeriPretvorbuUDatum(string celija, out DateTime datumOd)

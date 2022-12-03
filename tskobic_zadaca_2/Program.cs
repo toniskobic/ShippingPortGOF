@@ -10,25 +10,6 @@ namespace tskobic_zadaca_2
     {
         static bool KrajPrograma { get; set; } = false;
 
-        static string UlazniArgumenti { get; } = @"^(?:(-r [a-zA-Z_0-9.]+\.csv)(?!.*\1) )?"
-            + @"(-[lvb] [a-zA-Z_0-9.]+\.csv)(?!.*\2)"
-            + @"(?: (-r [a-zA-Z_0-9.]+\.csv)(?!.*\3))?"
-            + @"(?: (-[lvb] [a-zA-Z_0-9.]+\.csv)(?!.*\4))(?: (-r [a-zA-Z_0-9.]+\.csv)(?!.*\5))?"
-            + @"(?: (-[lvb] [a-zA-Z_0-9.]+\.csv)(?!.*\6))(?: (-r [a-zA-Z_0-9.]+\.csv)(?!.*\7))?$";
-
-        static string VirtualnoVrijeme { get; } = "^VR ([1-9]|([012][0-9])|(3[01]))."
-            + @"([0]{0,1}[1-9]|1[012]).\d\d\d\d. ([0-1]?[0-9]|2?[0-3]):([0-5]\d):([0-5]\d)$";
-
-        static string ZahtjevRezervacije { get; } = @"^UR ([a-zA-Z_0-9.]+\.csv)$";
-
-        static string ZahtjevRezPriveza { get; } = @"^ZD \d{1,9}$";
-
-        static string ZahtjevSlobPriveza { get; } = @"^ZP \d{1,9} ([0]?[1-9]|[1][0-9]|2[0-3])$$";
-
-        static string IspisVezova { get; } = @"^V ([A-Z]{2}) (S|Z)( ([1-9]|([012][0-9])|(3[01]))."
-            + @"([0]{0,1}[1-9]|1[012]).\d\d\d\d. ([0-1]?[0-9]|2?[0-3]):([0-5]\d):([0-5]\d)){2}$";
-
-
         public static void Inicijalizacija(List<Group> grupe)
         {
             BrodskaLukaSingleton bls = BrodskaLukaSingleton.Instanca();
@@ -199,7 +180,7 @@ namespace tskobic_zadaca_2
 
         static void Main(string[] args)
         {
-            Regex rg = new Regex(UlazniArgumenti);
+            Regex rg = new Regex(Konstante.UlazniArgumenti);
             Match match = rg.Match(string.Join(" ", args));
             List<Group> grupe = new List<Group>();
 
@@ -229,7 +210,7 @@ namespace tskobic_zadaca_2
                                 IspisStatusaVezova();
                                 break;
                             }
-                        case string ulaz when new Regex(IspisVezova).IsMatch(ulaz):
+                        case string ulaz when new Regex(Konstante.IspisVezova).IsMatch(ulaz):
                             {
                                 bls.VirtualniSat.IzvrsiVirtualniPomak();
                                 Ispis.VirtualniSat();
@@ -242,14 +223,14 @@ namespace tskobic_zadaca_2
                                 }
                                 break;
                             }
-                        case string ulaz when new Regex(VirtualnoVrijeme).IsMatch(ulaz):
+                        case string ulaz when new Regex(Konstante.VirtualnoVrijeme).IsMatch(ulaz):
                             {
                                 bls.VirtualniSat.StvarnoVrijeme = DateTime.Now;
                                 bls.VirtualniSat.VirtualnoVrijeme = DateTime.Parse(ulaz.Substring(3));
                                 Ispis.VirtualniSat();
                                 break;
                             }
-                        case string ulaz when new Regex(ZahtjevRezervacije).IsMatch(ulaz):
+                        case string ulaz when new Regex(Konstante.ZahtjevRezervacije).IsMatch(ulaz):
                             {
                                 Creator creator = new RezervacijeCreator();
                                 bls.VirtualniSat.IzvrsiVirtualniPomak();
@@ -257,14 +238,14 @@ namespace tskobic_zadaca_2
                                 creator.ProcitajPodatke(ulaz.Substring(3));
                                 break;
                             }
-                        case string ulaz when new Regex(ZahtjevRezPriveza).IsMatch(ulaz):
+                        case string ulaz when new Regex(Konstante.ZahtjevRezPriveza).IsMatch(ulaz):
                             {
                                 bls.VirtualniSat.IzvrsiVirtualniPomak();
                                 Ispis.VirtualniSat();
                                 PrivezRezerviranogBroda(ulaz.Substring(3));
                                 break;
                             }
-                        case string ulaz when new Regex(ZahtjevSlobPriveza).IsMatch(ulaz):
+                        case string ulaz when new Regex(Konstante.ZahtjevSlobPriveza).IsMatch(ulaz):
                             {
                                 bls.VirtualniSat.IzvrsiVirtualniPomak();
                                 Ispis.VirtualniSat();
