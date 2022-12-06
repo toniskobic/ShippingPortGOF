@@ -10,10 +10,10 @@
 
         public int SatiTrajanja { get; set; }
 
-        public Rezervacija(int iDVez, int iDBrod, DateTime datumOd, int satiTrajanja)
+        public Rezervacija(int idVez, int idBrod, DateTime datumOd, int satiTrajanja)
         {
-            IDVez = iDVez;
-            IDBrod = iDBrod;
+            IDVez = idVez;
+            IDBrod = idBrod;
             DatumOd = datumOd;
             SatiTrajanja = satiTrajanja;
         }

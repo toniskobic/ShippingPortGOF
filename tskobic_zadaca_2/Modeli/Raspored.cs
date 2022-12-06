@@ -2,9 +2,9 @@
 {
     public class Raspored
     {
-        public int IDVez { get; set; }
+        public int IdVez { get; set; }
 
-        public int IDBrod { get; set; }
+        public int IdBrod { get; set; }
 
         public List<DayOfWeek> DaniUTjednu { get; set; }
 
@@ -14,8 +14,8 @@
 
         public Raspored(int idVez, int idBrod, List<DayOfWeek> daniUTjednu, TimeOnly vrijemeOd, TimeOnly vrijemeDo)
         {
-            IDVez = idVez;
-            IDBrod = idBrod;
+            IdVez = idVez;
+            IdBrod = idBrod;
             DaniUTjednu = daniUTjednu;
             VrijemeOd = vrijemeOd;
             VrijemeDo = vrijemeDo;

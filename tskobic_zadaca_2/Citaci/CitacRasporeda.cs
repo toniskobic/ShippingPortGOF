@@ -78,10 +78,10 @@ namespace tskobic_zadaca_2.Citaci
                             continue;
                         }
                         BrodskaLukaSingleton bls = BrodskaLukaSingleton.Instanca();
-                        Brod? brod = bls.BrodskaLuka.Brodovi.Find(x => x.ID == idBrod);
+                        Brod? brod = bls.BrodskaLuka!.Brodovi.Find(x => x.ID == idBrod);
                         Vez? vez = bls.BrodskaLuka.Vezovi.Find(x => x.ID == idVez);
                         if (brod != null && vez != null && Utils.ProvjeriBrodIVez(brod, vez)
-                            && !bls.BrodskaLuka.Rasporedi.Exists(x => x.IDBrod == brod.ID && x.IDVez == vez.ID
+                            && !bls.BrodskaLuka.Rasporedi.Exists(x => x.IdBrod == brod.ID && x.IdVez == vez.ID
                             && daniUTjednu.Any(z => x.DaniUTjednu.Any(y => y == z)
                             && vrijemeOd <= x.VrijemeDo && x.VrijemeOd <= vrijemeDo)))
                         {

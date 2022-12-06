@@ -1,4 +1,5 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.Drawing;
+using System.Text.RegularExpressions;
 using tskobic_zadaca_2.Modeli;
 using tskobic_zadaca_2.Singleton;
 using tskobic_zadaca_2.Static;
@@ -48,13 +49,13 @@ namespace tskobic_zadaca_2.Citaci
                         }
                         TimeOnly vrijemeDo = vrijemeOd.AddHours(satiTrajanjaPriveza);
                         BrodskaLukaSingleton bls = BrodskaLukaSingleton.Instanca();
-                        Brod? brod = bls.BrodskaLuka.Brodovi.Find(x => x.ID == idBrod);
+                        Brod? brod = bls.BrodskaLuka!.Brodovi.Find(x => x.ID == idBrod);
                         if (brod != null)
                         {
                             List<Vez> vezovi = Utils.PronadjiVezove(brod);
                             if (vezovi.Count > 0)
                             {
-                                List<Vez> fVezoviRasporedi = vezovi.FindAll(vez => bls.BrodskaLuka.Rasporedi.Any(x => x.IDVez == vez.ID
+                                List<Vez> fVezoviRasporedi = vezovi.FindAll(vez => bls.BrodskaLuka.Rasporedi.Any(x => x.IdVez == vez.ID
                                 && x.DaniUTjednu.Contains(datumOd.DayOfWeek) && x.VrijemeOd <= vrijemeDo && vrijemeOd <= x.VrijemeDo));
 
                                 List<Vez> fVezoviRezervacije = vezovi.FindAll(vez => bls.BrodskaLuka.Rezervacije.Any(x => x.IDVez == vez.ID
@@ -62,9 +63,20 @@ namespace tskobic_zadaca_2.Citaci
                                 && TimeOnly.FromTimeSpan(x.DatumOd.TimeOfDay) <= vrijemeDo
                                 && vrijemeOd <= TimeOnly.FromTimeSpan(x.DatumOd.TimeOfDay).AddHours(x.SatiTrajanja)));
 
-                                Vez? vez = vezovi.Except(fVezoviRasporedi).Except(fVezoviRezervacije).ToList().FirstOrDefault();
-                                if (vez != null)
+                                List<Vez> slobodniVezovi = vezovi.Except(fVezoviRasporedi).Except(fVezoviRezervacije).ToList();
+
+                                if (slobodniVezovi.Count > 0)
                                 {
+                                    //TODO: Implementirati do kraja
+                                    Vez vez = slobodniVezovi.Aggregate((min, sljedeci) =>
+                                    {
+                                        if (min.Volumen == sljedeci.Volumen)
+                                        {
+                                            return min.CijenaPoSatu <= sljedeci.CijenaPoSatu ? min : sljedeci;
+                                        }
+                                        return min.Volumen < sljedeci.Volumen ? min : sljedeci;
+                                    });
+
                                     bls.BrodskaLuka.Rezervacije.Add(new Rezervacija(vez.ID, idBrod, datumOd, satiTrajanjaPriveza));
                                 }
                             }

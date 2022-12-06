@@ -1,4 +1,5 @@
-﻿using tskobic_zadaca_2.Singleton;
+﻿using System.Security.Cryptography;
+using tskobic_zadaca_2.Singleton;
 
 namespace tskobic_zadaca_2.Static
 {
@@ -39,6 +40,13 @@ namespace tskobic_zadaca_2.Static
                 + $"Broj greške: {++BrodskaLukaSingleton.Instanca().BrojGreski}");
         }
 
+        public static void GreskaPretvorbeVezova(string redak, string celija, string putanja)
+        {
+            Console.WriteLine($"ERROR: Neispravan redak '{redak}' u datoteci '{putanja}'."
+                + $" Ćeliju '{celija}' nije moguće pretvoriti u listu vezova. "
+                + $"Broj greške: {++BrodskaLukaSingleton.Instanca().BrojGreski}");
+        }
+
         public static void GreskaNeispravanInformativniRedak(string redak, string putanja)
         {
             Console.WriteLine($"ERROR: Neispravan prvi informativni redak '{redak}' u datoteci '{putanja}'."
@@ -56,6 +64,14 @@ namespace tskobic_zadaca_2.Static
         {
             Console.WriteLine($"ERROR: Neispravan redak '{redak}' u datoteci '{putanja}'."
                 + $" Ćelija '{celija}' ima {vrsta} nedozvoljene vrste."
+                + $"Broj greške: {++BrodskaLukaSingleton.Instanca().BrojGreski}");
+        }
+
+        public static void GreskaNepostojeciZapis(string redak, string celija, string putanja, int id, string tip)
+        {
+            Console.WriteLine($"ERROR: Redak '{redak}' sa neispravnim zapisem u ćeliji '{celija}'"
+                + $" u datoteci '{putanja}'."
+                + $" {tip} sa proslijeđenim id-em {id} ne postoji."
                 + $"Broj greške: {++BrodskaLukaSingleton.Instanca().BrojGreski}");
         }
 
@@ -81,14 +97,50 @@ namespace tskobic_zadaca_2.Static
             Console.WriteLine("ERROR: Neispravno unesena naredba!");
         }
 
-        public static void Vez(string id, string oznaka, string vrsta, string status)
+        public static void Vez(int id, string oznaka, string vrsta, string status)
         {
-            Console.WriteLine(string.Format("|{0,10}|{1,10}|{2,10}|{3,10}|", id, oznaka, vrsta, status));
+            Console.WriteLine(string.Format("|{0,10}|{1,-10}|{2,-10}|{3,-10}|", id, oznaka, vrsta, status));
         }
 
-        public static void Zaglavlje(string naslov)
+        public static void Vez(int redniBroj, int id, string oznaka, string vrsta, string status)
         {
-            Console.WriteLine($"----------------{naslov}----------------");
+            Console.WriteLine(string.Format("|{0,10}|{1,10}|{2,-10}|{3,-10}|{4,-10}|",
+                redniBroj, id, oznaka, vrsta, status));
+        }
+
+        public static void ZaglavljeVez()
+        {
+
+            if (BrodskaLukaSingleton.Instanca().RedniBroj)
+            {
+                Console.WriteLine($"---------------------Status vezova---------------------");
+                Console.WriteLine(string.Format("|{0,10}|{1,10}|{2,-10}|{3,-10}|{4,-10}|",
+                "Redni broj", "ID", "Oznaka", "Vrsta", "Status"));
+                Console.WriteLine($"-------------------------------------------------------");
+            }
+            else
+            {
+                Console.WriteLine($"----------------Status vezova----------------");
+                Console.WriteLine(string.Format("|{0,10}|{1,-10}|{2,-10}|{3,-10}|", "ID", "Oznaka", "Vrsta", "Status"));
+                Console.WriteLine($"---------------------------------------------");
+            }
+        }
+
+        public static void Podnozje(int brojZapisa)
+        {
+            if (BrodskaLukaSingleton.Instanca().RedniBroj)
+            {
+                Console.WriteLine($"-------------------------------------------------------");
+                Console.WriteLine(string.Format("|{0,52}{1, 0}|", "Broj zapisa :", brojZapisa));
+                Console.WriteLine($"-------------------------------------------------------");
+
+            }
+            else
+            {
+                Console.WriteLine($"---------------------------------------------");
+                Console.WriteLine(string.Format("|{0,41}{1, 0}|", "Broj zapisa :", brojZapisa));
+                Console.WriteLine($"---------------------------------------------");
+            }
         }
     }
 }

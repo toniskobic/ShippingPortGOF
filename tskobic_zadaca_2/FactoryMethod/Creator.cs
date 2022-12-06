@@ -4,7 +4,7 @@ namespace tskobic_zadaca_2.FactoryMethod
 {
     public abstract class Creator
     {
-        private ICitac citac;
+        private ICitac? citac;
 
         public abstract ICitac FactoryMethod();
 

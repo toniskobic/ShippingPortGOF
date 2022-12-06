@@ -22,7 +22,6 @@ namespace tskobic_zadaca_2.Citaci
                 {
                     string[] celije = retci[i].Split(";");
 
-
                     if (celije.Length != 11)
                     {
                         Ispis.GreskaBrojCelija(retci[i], putanja);
@@ -67,7 +66,7 @@ namespace tskobic_zadaca_2.Citaci
                             int kapacitetTereta = int.Parse(celije[10]);
 
                             BrodskaLukaSingleton bls = BrodskaLukaSingleton.Instanca();
-                            if (!bls.BrodskaLuka.Brodovi.Exists(x => x.ID == id) && bls.BrodskaLuka.DubinaLuke > gaz)
+                            if (!bls.BrodskaLuka!.Brodovi.Exists(x => x.ID == id) && bls.BrodskaLuka.DubinaLuke > gaz)
                             {
                                 Brod brod = new Brod(id, celije[1], celije[2], celije[3],
                                     duljina, sirina, gaz, maksBrzina, kapacitetPutnika,

@@ -16,7 +16,11 @@
 
         public int OstaliVezovi { get; set; }
 
+        public List<Mol> Molovi { get; set; }
+
         public List<Vez> Vezovi { get; set; }
+
+        public List<Kanal> Kanali { get; set; }
 
         public List<Brod> Brodovi { get; set; }
 
@@ -36,7 +40,9 @@
             PutnickiVezovi = putnickiVezovi;
             PoslovniVezovi = poslovniVezovi;
             OstaliVezovi = ostaliVezovi;
+            Molovi = new List<Mol>();
             Vezovi = new List<Vez>();
+            Kanali = new List<Kanal>();
             Brodovi = new List<Brod>();
             Rasporedi = new List<Raspored>();
             Rezervacije = new List<Rezervacija>();

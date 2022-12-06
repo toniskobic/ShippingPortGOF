@@ -2,7 +2,7 @@
   "profiles": {
     "tskobic_zadaca_2": {
       "commandName": "Project",
-      "commandLineArgs": "-l DZ_2_luka.csv -v DZ_2_vez.csv -r DZ_2_raspored.csv -b DZ_2_brod.csv"
+      "commandLineArgs": "-l DZ_2_luka.csv -r DZ_2_raspored.csv -v DZ_2_vez.csv -b DZ_2_brod.csv -m DZ_2_mol.csv -mv DZ_2_mol_vez.csv -k DZ_2_kanal.csv"
     },
     "neispravni_argumenti": {
       "commandName": "Project",
