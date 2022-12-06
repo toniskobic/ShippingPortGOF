@@ -107,5 +107,17 @@ namespace tskobic_zadaca_2.Static
 
             return provjera;
         }
+
+        public static Vez PronadjiNajekonomicnijiVez(List<Vez> vezovi)
+        {
+            return vezovi.Aggregate((min, sljedeci) =>
+            {
+                if (min.Volumen == sljedeci.Volumen)
+                {
+                    return min.CijenaPoSatu <= sljedeci.CijenaPoSatu ? min : sljedeci;
+                }
+                return min.Volumen < sljedeci.Volumen ? min : sljedeci;
+            });
+        }
     }
 }

@@ -71,6 +71,7 @@ namespace tskobic_zadaca_2
             BrodskaLukaSingleton bls = BrodskaLukaSingleton.Instanca();
             if (!bls.BrodskaLuka!.Brodovi.Exists(x => x.ID == id))
             {
+                Console.WriteLine($"Brod s proslijeđenim ID-em {id} ne postoji.");
                 return;
             }
             DateTime datum = bls.VirtualniSat.VirtualnoVrijeme;
@@ -87,6 +88,7 @@ namespace tskobic_zadaca_2
                 {
                     Privez privez = new Privez(raspored.IdVez, id, datum, datum.Date.Add(raspored.VrijemeDo.ToTimeSpan()));
                     bls.BrodskaLuka.Privezi.Add(privez);
+                    Console.WriteLine("Naredba uspješna.");
                 }
                 else
                 {
@@ -98,9 +100,15 @@ namespace tskobic_zadaca_2
                         Privez privez = new Privez(rezervacija.IDVez, id,
                             datum, rezervacija.DatumOd.AddHours(rezervacija.SatiTrajanja));
                         bls.BrodskaLuka.Privezi.Add(privez);
+                        Console.WriteLine("Naredba uspješna.");
+                        return;
                     }
+                    Console.WriteLine($"Naredba neuspješna, ne postoji odobrena rezervacija"
+                        + $" ili rezervacija prema fiksnom rasporedu za brod s ID-em {id} u ovome trenutku.");
+                    return;
                 }
             }
+            Console.WriteLine("Naredba neuspješna, brod je već privezan.");
         }
 
         private static void PrivezSlobodnogBroda(string idBroda, string trajanje)
@@ -111,6 +119,7 @@ namespace tskobic_zadaca_2
             Brod? brod = bls.BrodskaLuka!.Brodovi.Find(x => x.ID == id);
             if (brod == null)
             {
+                Console.WriteLine($"Brod s proslijeđenim ID-em {id} ne postoji.");
                 return;
             }
             DateTime datum = bls.VirtualniSat.VirtualnoVrijeme;
@@ -135,15 +144,24 @@ namespace tskobic_zadaca_2
                         && TimeOnly.FromTimeSpan(x.DatumOd.TimeOfDay) <= vrijeme.AddHours(sati)
                         && vrijeme <= TimeOnly.FromTimeSpan(x.DatumOd.TimeOfDay).AddHours(x.SatiTrajanja)));
 
-                    Vez? vez = vezovi.Except(fVezoviPrivezi)
-                        .Except(fVezoviRasporedi).Except(fVezoviRezervacije).ToList().FirstOrDefault();
-                    if (vez != null)
+                    List<Vez> slobodniVezovi = vezovi.Except(fVezoviPrivezi)
+                        .Except(fVezoviRasporedi).Except(fVezoviRezervacije).ToList();
+
+                    if (slobodniVezovi.Count > 0)
                     {
+                        Vez vez = Utils.PronadjiNajekonomicnijiVez(slobodniVezovi);
                         Privez privez = new Privez(vez.ID, id, datum, datum.AddHours(sati));
                         bls.BrodskaLuka.Privezi.Add(privez);
+                        Console.WriteLine("Naredba uspješna.");
+                        return;
                     }
+                    Console.WriteLine("Naredba neuspješna, ne postoji slobodan vez.");
+                    return;
                 }
+                Console.WriteLine($"Naredba neuspješna, ne postoji odgovarajući vez za brod s ID-em {id}");
+                return;
             }
+            Console.WriteLine("Naredba neuspješna, brod je već privezan.");
         }
 
         private static void IspisStatusaVezova()
@@ -175,7 +193,7 @@ namespace tskobic_zadaca_2
             }
             IspisListeVezova(slobodniVezovi, "Slobodan");
             IspisListeVezova(zauzetiVezovi, "Zauzet");
-            if(bls.Podnozje)
+            if (bls.Podnozje)
             {
                 int brojZapisa = slobodniVezovi.Count + zauzetiVezovi.Count;
                 Ispis.Podnozje(brojZapisa);

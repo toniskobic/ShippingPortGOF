@@ -67,16 +67,7 @@ namespace tskobic_zadaca_2.Citaci
 
                                 if (slobodniVezovi.Count > 0)
                                 {
-                                    //TODO: Implementirati do kraja
-                                    Vez vez = slobodniVezovi.Aggregate((min, sljedeci) =>
-                                    {
-                                        if (min.Volumen == sljedeci.Volumen)
-                                        {
-                                            return min.CijenaPoSatu <= sljedeci.CijenaPoSatu ? min : sljedeci;
-                                        }
-                                        return min.Volumen < sljedeci.Volumen ? min : sljedeci;
-                                    });
-
+                                    Vez vez = Utils.PronadjiNajekonomicnijiVez(vezovi);
                                     bls.BrodskaLuka.Rezervacije.Add(new Rezervacija(vez.ID, idBrod, datumOd, satiTrajanjaPriveza));
                                 }
                             }
