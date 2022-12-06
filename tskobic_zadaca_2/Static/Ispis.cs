@@ -1,5 +1,4 @@
-﻿using System.Security.Cryptography;
-using tskobic_zadaca_2.Singleton;
+﻿using tskobic_zadaca_2.Singleton;
 
 namespace tskobic_zadaca_2.Static
 {
