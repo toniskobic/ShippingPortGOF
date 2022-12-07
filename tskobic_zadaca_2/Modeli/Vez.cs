@@ -1,6 +1,8 @@
-﻿namespace tskobic_zadaca_2.Modeli
+﻿using tskobic_zadaca_2.Visitor;
+
+namespace tskobic_zadaca_2.Modeli
 {
-    public class Vez
+    public class Vez : IVez
     {
         public int ID { get; set; }
 
@@ -37,6 +39,11 @@
             MaksDuljina = maksDuljina;
             MaksSirina = maksSirina;
             MaksDubina = maksDubina;
+        }
+
+        public string Accept(IVezVisitor visitor)
+        {
+            return visitor.Visit(this);
         }
     }
 }

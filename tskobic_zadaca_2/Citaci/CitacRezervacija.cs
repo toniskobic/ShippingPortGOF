@@ -58,7 +58,7 @@ namespace tskobic_zadaca_2.Citaci
                                 List<Vez> fVezoviRasporedi = vezovi.FindAll(vez => bls.BrodskaLuka.Rasporedi.Any(x => x.IdVez == vez.ID
                                 && x.DaniUTjednu.Contains(datumOd.DayOfWeek) && x.VrijemeOd <= vrijemeDo && vrijemeOd <= x.VrijemeDo));
 
-                                List<Vez> fVezoviRezervacije = vezovi.FindAll(vez => bls.BrodskaLuka.Rezervacije.Any(x => x.IDVez == vez.ID
+                                List<Vez> fVezoviRezervacije = vezovi.FindAll(vez => bls.BrodskaLuka.Rezervacije.Any(x => x.IdVez == vez.ID
                                 && x.DatumOd.Date == datumOd.Date
                                 && TimeOnly.FromTimeSpan(x.DatumOd.TimeOfDay) <= vrijemeDo
                                 && vrijemeOd <= TimeOnly.FromTimeSpan(x.DatumOd.TimeOfDay).AddHours(x.SatiTrajanja)));

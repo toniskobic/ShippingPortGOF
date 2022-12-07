@@ -141,5 +141,36 @@ namespace tskobic_zadaca_2.Static
                 Console.WriteLine($"---------------------------------------------");
             }
         }
+
+        public static void ZaglavljeZauzetihVezova()
+        {
+
+            if (BrodskaLukaSingleton.Instanca().RedniBroj)
+            {
+                Console.WriteLine($"-------------Broj zauzetih vezova po vrsti-------------");
+                Console.WriteLine(string.Format("|{0,17}|{1,-17}|{2,17}|",
+                "Redni broj", "Vrsta", "Broj zauzetih"));
+                Console.WriteLine($"-------------------------------------------------------");
+            }
+            else
+            {
+                Console.WriteLine($"--------Broj zauzetih vezova po vrsti--------");
+                Console.WriteLine(string.Format("|{0,-20}|{1,22}|",
+                "Vrsta", "Broj zauzetih"));
+                Console.WriteLine($"---------------------------------------------");
+            }
+        }
+
+        public static void SumaZauzetihVezova(string vrsta, int brojZauzetih)
+        {
+            Console.WriteLine(string.Format("|{0,-20}|{1,22}|", vrsta, brojZauzetih));
+        }
+
+        public static void SumaZauzetihVezova(int redniBroj, string vrsta, int brojZauzetih)
+        {
+            Console.WriteLine(string.Format("|{0,17}|{1,-17}|{2,17}|",
+                redniBroj, vrsta, brojZauzetih));
+        }
+
     }
 }

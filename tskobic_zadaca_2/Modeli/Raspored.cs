@@ -1,6 +1,8 @@
-﻿namespace tskobic_zadaca_2.Modeli
+﻿using tskobic_zadaca_2.Visitor;
+
+namespace tskobic_zadaca_2.Modeli
 {
-    public class Raspored
+    public class Raspored : IElement
     {
         public int IdVez { get; set; }
 
@@ -19,6 +21,11 @@
             DaniUTjednu = daniUTjednu;
             VrijemeOd = vrijemeOd;
             VrijemeDo = vrijemeDo;
+        }
+
+        public int? Accept(IElementVisitor visitor)
+        {
+            return visitor.Visit(this);
         }
     }
 }

@@ -1,8 +1,10 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.Globalization;
+using System.Text.RegularExpressions;
 using tskobic_zadaca_2.FactoryMethod;
 using tskobic_zadaca_2.Modeli;
 using tskobic_zadaca_2.Singleton;
 using tskobic_zadaca_2.Static;
+using tskobic_zadaca_2.Visitor;
 
 namespace tskobic_zadaca_2
 {
@@ -77,7 +79,7 @@ namespace tskobic_zadaca_2
             DateTime datum = bls.VirtualniSat.VirtualnoVrijeme;
             TimeOnly vrijeme = TimeOnly.FromTimeSpan(datum.TimeOfDay);
             DayOfWeek dan = datum.DayOfWeek;
-            Privez? postojeciPrivez = bls.BrodskaLuka.Privezi.Find(x => x.IDBrod == id && x.VrijemeOd.Date.Equals(datum.Date)
+            Privez? postojeciPrivez = bls.BrodskaLuka.Privezi.Find(x => x.IdBrod == id && x.VrijemeOd.Date.Equals(datum.Date)
                 && TimeOnly.FromTimeSpan(x.VrijemeOd.TimeOfDay) <= vrijeme
                 && TimeOnly.FromTimeSpan(x.VrijemeDo.TimeOfDay) > vrijeme);
             if (postojeciPrivez == null)
@@ -92,12 +94,12 @@ namespace tskobic_zadaca_2
                 }
                 else
                 {
-                    Rezervacija? rezervacija = bls.BrodskaLuka.Rezervacije.Find(x => x.IDBrod == id
+                    Rezervacija? rezervacija = bls.BrodskaLuka.Rezervacije.Find(x => x.IdBrod == id
                         && x.DatumOd.Date.Equals(datum.Date) && TimeOnly.FromDateTime(x.DatumOd) <= vrijeme
                         && TimeOnly.FromDateTime(x.DatumOd).AddHours(x.SatiTrajanja) > vrijeme);
                     if (rezervacija != null)
                     {
-                        Privez privez = new Privez(rezervacija.IDVez, id,
+                        Privez privez = new Privez(rezervacija.IdVez, id,
                             datum, rezervacija.DatumOd.AddHours(rezervacija.SatiTrajanja));
                         bls.BrodskaLuka.Privezi.Add(privez);
                         Console.WriteLine("Naredba uspješna.");
@@ -125,7 +127,7 @@ namespace tskobic_zadaca_2
             DateTime datum = bls.VirtualniSat.VirtualnoVrijeme;
             TimeOnly vrijeme = TimeOnly.FromTimeSpan(datum.TimeOfDay);
             DayOfWeek dan = datum.DayOfWeek;
-            Privez? postojeciPrivez = bls.BrodskaLuka.Privezi.Find(x => x.IDBrod == id && x.VrijemeOd.Date.Equals(datum.Date)
+            Privez? postojeciPrivez = bls.BrodskaLuka.Privezi.Find(x => x.IdBrod == id && x.VrijemeOd.Date.Equals(datum.Date)
                 && TimeOnly.FromTimeSpan(x.VrijemeOd.TimeOfDay) <= vrijeme
                 && TimeOnly.FromTimeSpan(x.VrijemeDo.TimeOfDay) > vrijeme);
             if (postojeciPrivez == null)
@@ -133,13 +135,13 @@ namespace tskobic_zadaca_2
                 List<Vez> vezovi = Utils.PronadjiVezove(brod);
                 if (vezovi.Count > 0)
                 {
-                    List<Vez> fVezoviPrivezi = vezovi.FindAll(vez => bls.BrodskaLuka.Privezi.Any(x => x.IDVez == vez.ID
+                    List<Vez> fVezoviPrivezi = vezovi.FindAll(vez => bls.BrodskaLuka.Privezi.Any(x => x.IdVez == vez.ID
                         && x.VrijemeOd <= datum.AddHours(sati) && datum <= x.VrijemeDo));
 
                     List<Vez> fVezoviRasporedi = vezovi.FindAll(vez => bls.BrodskaLuka.Rasporedi.Any(x => x.IdVez == vez.ID
                         && x.DaniUTjednu.Contains(dan) && x.VrijemeOd <= vrijeme.AddHours(sati) && vrijeme <= x.VrijemeDo));
 
-                    List<Vez> fVezoviRezervacije = vezovi.FindAll(vez => bls.BrodskaLuka.Rezervacije.Any(x => x.IDVez == vez.ID
+                    List<Vez> fVezoviRezervacije = vezovi.FindAll(vez => bls.BrodskaLuka.Rezervacije.Any(x => x.IdVez == vez.ID
                         && x.DatumOd.Date == datum.Date
                         && TimeOnly.FromTimeSpan(x.DatumOd.TimeOfDay) <= vrijeme.AddHours(sati)
                         && vrijeme <= TimeOnly.FromTimeSpan(x.DatumOd.TimeOfDay).AddHours(x.SatiTrajanja)));
@@ -173,13 +175,13 @@ namespace tskobic_zadaca_2
             TimeOnly vrijeme = TimeOnly.FromTimeSpan(datum.TimeOfDay);
             DayOfWeek dan = datum.DayOfWeek;
 
-            List<Vez> fVezoviPrivezi = vezovi.FindAll(vez => bls.BrodskaLuka.Privezi.Any(x => x.IDVez == vez.ID
+            List<Vez> fVezoviPrivezi = vezovi.FindAll(vez => bls.BrodskaLuka.Privezi.Any(x => x.IdVez == vez.ID
                 && x.VrijemeOd <= datum && datum <= x.VrijemeDo));
 
             List<Vez> fVezoviRasporedi = vezovi.FindAll(vez => bls.BrodskaLuka.Rasporedi.Any(x => x.IdVez == vez.ID
                  && x.DaniUTjednu.Contains(dan) && x.VrijemeOd <= vrijeme && vrijeme <= x.VrijemeDo));
 
-            List<Vez> fVezoviRezervacije = vezovi.FindAll(vez => bls.BrodskaLuka.Rezervacije.Any(x => x.IDVez == vez.ID
+            List<Vez> fVezoviRezervacije = vezovi.FindAll(vez => bls.BrodskaLuka.Rezervacije.Any(x => x.IdVez == vez.ID
                 && x.DatumOd.Date == datum.Date
                 && TimeOnly.FromTimeSpan(x.DatumOd.TimeOfDay) <= vrijeme
                 && vrijeme <= TimeOnly.FromTimeSpan(x.DatumOd.TimeOfDay).AddHours(x.SatiTrajanja)));
@@ -244,6 +246,107 @@ namespace tskobic_zadaca_2
 
             Utils.ProvjeriPretvorbuUDatum(datumOd, out DateTime intervalOd);
             Utils.ProvjeriPretvorbuUDatum(datumDo, out DateTime intervalDo);
+        }
+
+        private static void IspisZauzetihVezova(string ulaz)
+        {
+            BrodskaLukaSingleton bls = BrodskaLukaSingleton.Instanca();
+            List<Vez> vezovi = bls.BrodskaLuka!.Vezovi;
+
+            DateTime.TryParseExact(ulaz, "dd.MM.yyyy. HH:mm", CultureInfo.InvariantCulture,
+                DateTimeStyles.None, out DateTime datum);
+            TimeOnly vrijeme = TimeOnly.FromTimeSpan(datum.TimeOfDay);
+            DayOfWeek dan = datum.DayOfWeek;
+
+            List<Privez> privezi = bls.BrodskaLuka!.Privezi;
+            List<Raspored> rasporedi = bls.BrodskaLuka!.Rasporedi;
+            List<Rezervacija> rezervacije = bls.BrodskaLuka!.Rezervacije;
+
+            List<IElement> elementi = privezi.ToList<IElement>().Concat(rasporedi).Concat(rezervacije).ToList();
+
+            List<Vez> zauzetiVezovi = new List<Vez>();
+            IElementVisitor elementVisitor = new ElementVisitor(datum);
+
+            foreach (IElement element in elementi)
+            {
+                int? id = element.Accept(elementVisitor);
+                if (id != null)
+                {
+                    Vez? vez = vezovi.Find(x => x.ID == id);
+                    if (vez != null && !zauzetiVezovi.Contains(vez))
+                    {
+                        zauzetiVezovi.Add(vez);
+                    }
+                }
+            }
+            if (zauzetiVezovi.Count > 0)
+            {
+                SumarnoZbrajanjeVezova(zauzetiVezovi);
+                return;
+            }
+            Console.WriteLine("Svi vezovi su slobodni.");
+        }
+
+        public static void SumarnoZbrajanjeVezova(List<Vez> vezovi)
+        {
+            int putnickiVezovi = 0;
+            int poslovniVezovi = 0;
+            int ostaliVezovi = 0;
+            IVezVisitor vezVisitor = new VezVisitor();
+
+            foreach (IVez vez in vezovi)
+            {
+                string vrsta = vez.Accept(vezVisitor);
+                switch (vrsta)
+                {
+                    case "PU":
+                        {
+                            putnickiVezovi++;
+                            break;
+                        }
+                    case "PO":
+                        {
+                            poslovniVezovi++;
+                            break;
+                        }
+                    case "OS":
+                        {
+                            ostaliVezovi++;
+                            break;
+                        }
+                    default:
+                        break;
+                }
+            }
+            BrodskaLukaSingleton bls = BrodskaLukaSingleton.Instanca();
+
+            if (bls.Zaglavlje)
+            {
+                Ispis.ZaglavljeZauzetihVezova();
+            }
+            IspisSumeZauzetihVezova(putnickiVezovi, poslovniVezovi, ostaliVezovi);
+            if (bls.Podnozje)
+            {
+                int brojZapisa = 3;
+                Ispis.Podnozje(brojZapisa);
+            }
+        }
+
+        private static void IspisSumeZauzetihVezova(int putnicki, int poslovni, int ostali)
+        {
+            BrodskaLukaSingleton bls = BrodskaLukaSingleton.Instanca();
+            if (bls.RedniBroj)
+            {
+                Ispis.SumaZauzetihVezova(1, "PU", putnicki);
+                Ispis.SumaZauzetihVezova(2, "PO", poslovni);
+                Ispis.SumaZauzetihVezova(3, "OS", ostali);
+            }
+            else
+            {
+                Ispis.SumaZauzetihVezova("PU", putnicki);
+                Ispis.SumaZauzetihVezova("PO", poslovni);
+                Ispis.SumaZauzetihVezova("OS", ostali);
+            }
         }
 
         static void Main(string[] args)
@@ -330,6 +433,14 @@ namespace tskobic_zadaca_2
                                 bls.VirtualniSat.IzvrsiVirtualniPomak();
                                 Ispis.VirtualniSat();
                                 UredjenjeIspisa(ulaz);
+                                break;
+                            }
+                        case string ulaz when new Regex(Konstante.IspisZauzetihVezova).IsMatch(ulaz):
+                            {
+                                bls.VirtualniSat.IzvrsiVirtualniPomak();
+                                Ispis.VirtualniSat();
+                                string[] podaci = ulaz.Split(" ");
+                                IspisZauzetihVezova(ulaz.Substring(3));
                                 break;
                             }
                         case "Q":

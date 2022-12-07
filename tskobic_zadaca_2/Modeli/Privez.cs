@@ -1,21 +1,28 @@
-﻿namespace tskobic_zadaca_2.Modeli
-{
-    public class Privez
-    {
-        public int IDVez { get; set; }
+﻿using tskobic_zadaca_2.Visitor;
 
-        public int IDBrod { get; set; }
+namespace tskobic_zadaca_2.Modeli
+{
+    public class Privez : IElement
+    {
+        public int IdVez { get; set; }
+
+        public int IdBrod { get; set; }
 
         public DateTime VrijemeOd { get; set; }
 
         public DateTime VrijemeDo { get; set; }
 
-        public Privez(int iDVez, int iDBrod, DateTime vrijemeOd, DateTime vrijemeDo)
+        public Privez(int idVez, int idBrod, DateTime vrijemeOd, DateTime vrijemeDo)
         {
-            IDVez = iDVez;
-            IDBrod = iDBrod;
+            IdVez = idVez;
+            IdBrod = idBrod;
             VrijemeOd = vrijemeOd;
             VrijemeDo = vrijemeDo;
+        }
+
+        public int? Accept(IElementVisitor visitor)
+        {
+            return visitor.Visit(this);
         }
     }
 }
