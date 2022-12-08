@@ -1,4 +1,5 @@
-﻿using tskobic_zadaca_2.Singleton;
+﻿using System.Reflection.Metadata;
+using tskobic_zadaca_2.Singleton;
 
 namespace tskobic_zadaca_2.Static
 {
@@ -171,6 +172,5 @@ namespace tskobic_zadaca_2.Static
             Console.WriteLine(string.Format("|{0,17}|{1,-17}|{2,17}|",
                 redniBroj, vrsta, brojZauzetih));
         }
-
     }
 }

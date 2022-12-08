@@ -41,5 +41,9 @@
 
         public static string IspisZauzetihVezova { get; } = @"^ZA ([1-9]|([012][0-9])|(3[01]))."
             + @"([0]{0,1}[1-9]|1[012]).\d\d\d\d. ([0-1]?[0-9]|2?[0-3]):([0-5]\d)$";
+
+        public static string SpajanjeNaKanal { get; } = @"^F \d{1,9} \d{1,9}(?: Q)*$";
+
+        public static string StatusBroda { get; } = @"^B \d{1,9}$";
     }
 }

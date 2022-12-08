@@ -49,7 +49,7 @@ namespace tskobic_zadaca_2.Citaci
                         }
 
                         BrodskaLukaSingleton bls = BrodskaLukaSingleton.Instanca();
-                        if (!bls.BrodskaLuka!.Kanali.Exists(x => x.ID == id))
+                        if (!bls.BrodskaLuka!.Kanali.Exists(x => x.ID == id || x.Frekvencija == frekvencija))
                         {
                             bls.BrodskaLuka.Kanali.Add(new Kanal(id, frekvencija, maksVeze));
                         }

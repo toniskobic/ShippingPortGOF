@@ -1,6 +1,8 @@
-﻿namespace tskobic_zadaca_2.Modeli
+﻿using tskobic_zadaca_2.Observer;
+
+namespace tskobic_zadaca_2.Modeli
 {
-    public class Brod
+    public class Brod : IObserver
     {
         public int ID { get; set; }
 
@@ -24,6 +26,8 @@
 
         public int KapacitetTereta { get; set; }
 
+        public string? ZadnjaPoruka { get; set; }
+
         public Brod(int id, string oznakaBroda, string naziv, string vrsta,
             double duljina, double sirina, double gaz, double maksBrzina,
             int kapacitetPutnika, int kapacitetOsobnihVozila, int kapacitetTereta)
@@ -39,6 +43,12 @@
             KapacitetPutnika = kapacitetPutnika;
             KapacitetOsobnihVozila = kapacitetOsobnihVozila;
             KapacitetTereta = kapacitetTereta;
+        }
+
+        public void Update(ISubject s)
+        {
+            ZadnjaPoruka = s.GetState();
+            Console.WriteLine($"Brod {ID} zaprimio poruku: '{ZadnjaPoruka}'.");
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System.Globalization;
 using System.Text.RegularExpressions;
+using tskobic_zadaca_2.ChainOfResponsibility;
 using tskobic_zadaca_2.FactoryMethod;
 using tskobic_zadaca_2.Modeli;
 using tskobic_zadaca_2.Singleton;
@@ -12,6 +13,7 @@ namespace tskobic_zadaca_2
     {
         private static bool KrajPrograma { get; set; } = false;
 
+        #region Metode
         private static bool Inicijalizacija(List<Group> grupe)
         {
             BrodskaLukaSingleton bls = BrodskaLukaSingleton.Instanca();
@@ -67,83 +69,118 @@ namespace tskobic_zadaca_2
             }
         }
 
-        private static void PrivezRezerviranogBroda(string ulaz)
+        private static void PrivezRezerviranogBroda(int idBrod)
         {
-            int id = int.Parse(ulaz);
             BrodskaLukaSingleton bls = BrodskaLukaSingleton.Instanca();
-            if (!bls.BrodskaLuka!.Brodovi.Exists(x => x.ID == id))
+            Brod? brod = bls.BrodskaLuka!.Brodovi.Find(x => x.ID == idBrod);
+            if (brod == null)
             {
-                Console.WriteLine($"Brod s proslijeđenim ID-em {id} ne postoji.");
+                Console.WriteLine($"Brod s proslijeđenim ID-em {idBrod} ne postoji.");
+                return;
+            }
+            List<Kanal> kanali = bls.BrodskaLuka!.Kanali;
+            Kanal? kanal = kanali.Find(x => x.Observers.Contains(brod));
+            if (kanal == null)
+            {
+                Console.WriteLine($"Brod s ID-em {idBrod} mora biti u komunikaciji "
+                    + $"s kapetanijom da bi zatražio privez.");
                 return;
             }
             DateTime datum = bls.VirtualniSat.VirtualnoVrijeme;
             TimeOnly vrijeme = TimeOnly.FromTimeSpan(datum.TimeOfDay);
             DayOfWeek dan = datum.DayOfWeek;
-            Privez? postojeciPrivez = bls.BrodskaLuka.Privezi.Find(x => x.IdBrod == id && x.VrijemeOd.Date.Equals(datum.Date)
+            Privez? postojeciPrivez = bls.BrodskaLuka.Privezi.Find(x => x.IdBrod == idBrod
+                && x.VrijemeOd.Date.Equals(datum.Date)
                 && TimeOnly.FromTimeSpan(x.VrijemeOd.TimeOfDay) <= vrijeme
                 && TimeOnly.FromTimeSpan(x.VrijemeDo.TimeOfDay) > vrijeme);
+            string poruka = "";
             if (postojeciPrivez == null)
             {
-                Raspored? raspored = bls.BrodskaLuka.Rasporedi.Find(x => x.IdBrod == id
+                Raspored? raspored = bls.BrodskaLuka.Rasporedi.Find(x => x.IdBrod == idBrod
                     && x.DaniUTjednu.Contains(dan) && x.VrijemeOd <= vrijeme && x.VrijemeDo > vrijeme);
                 if (raspored != null)
                 {
-                    Privez privez = new Privez(raspored.IdVez, id, datum, datum.Date.Add(raspored.VrijemeDo.ToTimeSpan()));
+                    DateTime vrijemeDo = datum.Date.Add(raspored.VrijemeDo.ToTimeSpan());
+                    Privez privez = new Privez(raspored.IdVez, idBrod, datum, vrijemeDo);
                     bls.BrodskaLuka.Privezi.Add(privez);
+                    bls.BrodskaLuka.Dnevnik.Add(new Zapis(VrstaZahtjeva.ZD, idBrod, false, datum, vrijemeDo));
+                    ZapisiPoruku(kanal, $"Brodu s ID-em {brod.ID} odobren privez na vez {raspored.IdVez}.");
                     Console.WriteLine("Naredba uspješna.");
+                    return;
                 }
                 else
                 {
-                    Rezervacija? rezervacija = bls.BrodskaLuka.Rezervacije.Find(x => x.IdBrod == id
+                    Rezervacija? rezervacija = bls.BrodskaLuka.Rezervacije.Find(x => x.IdBrod == idBrod
                         && x.DatumOd.Date.Equals(datum.Date) && TimeOnly.FromDateTime(x.DatumOd) <= vrijeme
                         && TimeOnly.FromDateTime(x.DatumOd).AddHours(x.SatiTrajanja) > vrijeme);
                     if (rezervacija != null)
                     {
-                        Privez privez = new Privez(rezervacija.IdVez, id,
-                            datum, rezervacija.DatumOd.AddHours(rezervacija.SatiTrajanja));
+                        DateTime vrijemeDo = rezervacija.DatumOd.AddHours(rezervacija.SatiTrajanja);
+                        Privez privez = new Privez(rezervacija.IdVez, idBrod,
+                            datum, vrijemeDo);
                         bls.BrodskaLuka.Privezi.Add(privez);
+                        bls.BrodskaLuka.Dnevnik.Add(new Zapis(VrstaZahtjeva.ZD, idBrod, false, datum, vrijemeDo));
+                        ZapisiPoruku(kanal, $"Brodu s ID-em {brod.ID} odobren privez na vez {rezervacija.IdVez}.");
                         Console.WriteLine("Naredba uspješna.");
                         return;
                     }
-                    Console.WriteLine($"Naredba neuspješna, ne postoji odobrena rezervacija"
-                        + $" ili rezervacija prema fiksnom rasporedu za brod s ID-em {id} u ovome trenutku.");
-                    return;
+                    else
+                    {
+                        poruka = $"Brodu s ID-em {brod.ID} odbijen privez na vez, ne postoji rezervacija.";
+                    }
                 }
             }
-            Console.WriteLine("Naredba neuspješna, brod je već privezan.");
+            else
+            {
+                poruka = $"Brodu s ID-em {brod.ID} odbijen privez na vez, već je privezan.";
+            }
+            bls.BrodskaLuka.Dnevnik.Add(new Zapis(VrstaZahtjeva.ZD, idBrod, true));
+            ZapisiPoruku(kanal, $"{kanal.Frekvencija}: {poruka}");
+            Console.WriteLine(poruka);
         }
 
-        private static void PrivezSlobodnogBroda(string idBroda, string trajanje)
+        private static void PrivezSlobodnogBroda(int idBrod, int trajanje)
         {
-            int id = int.Parse(idBroda);
-            int sati = int.Parse(trajanje);
             BrodskaLukaSingleton bls = BrodskaLukaSingleton.Instanca();
-            Brod? brod = bls.BrodskaLuka!.Brodovi.Find(x => x.ID == id);
+            Brod? brod = bls.BrodskaLuka!.Brodovi.Find(x => x.ID == idBrod);
             if (brod == null)
             {
-                Console.WriteLine($"Brod s proslijeđenim ID-em {id} ne postoji.");
+                Console.WriteLine($"Brod s proslijeđenim ID-em {idBrod} ne postoji.");
+                return;
+            }
+            List<Kanal> kanali = bls.BrodskaLuka!.Kanali;
+            Kanal? kanal = kanali.Find(x => x.Observers.Contains(brod));
+            if (kanal == null)
+            {
+                Console.WriteLine($"Brod s ID-em {idBrod} mora biti u komunikaciji "
+                    + $"s kapetanijom da bi zatražio privez.");
                 return;
             }
             DateTime datum = bls.VirtualniSat.VirtualnoVrijeme;
             TimeOnly vrijeme = TimeOnly.FromTimeSpan(datum.TimeOfDay);
             DayOfWeek dan = datum.DayOfWeek;
-            Privez? postojeciPrivez = bls.BrodskaLuka.Privezi.Find(x => x.IdBrod == id && x.VrijemeOd.Date.Equals(datum.Date)
+            Privez? postojeciPrivez = bls.BrodskaLuka.Privezi.Find(x => x.IdBrod == idBrod
+                && x.VrijemeOd.Date.Equals(datum.Date)
                 && TimeOnly.FromTimeSpan(x.VrijemeOd.TimeOfDay) <= vrijeme
                 && TimeOnly.FromTimeSpan(x.VrijemeDo.TimeOfDay) > vrijeme);
+            string poruka = "";
             if (postojeciPrivez == null)
             {
                 List<Vez> vezovi = Utils.PronadjiVezove(brod);
                 if (vezovi.Count > 0)
                 {
                     List<Vez> fVezoviPrivezi = vezovi.FindAll(vez => bls.BrodskaLuka.Privezi.Any(x => x.IdVez == vez.ID
-                        && x.VrijemeOd <= datum.AddHours(sati) && datum <= x.VrijemeDo));
+                        && x.VrijemeOd <= datum.AddHours(trajanje) && datum <= x.VrijemeDo));
 
-                    List<Vez> fVezoviRasporedi = vezovi.FindAll(vez => bls.BrodskaLuka.Rasporedi.Any(x => x.IdVez == vez.ID
-                        && x.DaniUTjednu.Contains(dan) && x.VrijemeOd <= vrijeme.AddHours(sati) && vrijeme <= x.VrijemeDo));
+                    List<Vez> fVezoviRasporedi = vezovi.FindAll(vez => bls.BrodskaLuka.Rasporedi
+                        .Any(x => x.IdVez == vez.ID
+                        && x.DaniUTjednu.Contains(dan)
+                        && x.VrijemeOd <= vrijeme.AddHours(trajanje) && vrijeme <= x.VrijemeDo));
 
-                    List<Vez> fVezoviRezervacije = vezovi.FindAll(vez => bls.BrodskaLuka.Rezervacije.Any(x => x.IdVez == vez.ID
+                    List<Vez> fVezoviRezervacije = vezovi.FindAll(vez => bls.BrodskaLuka.Rezervacije
+                        .Any(x => x.IdVez == vez.ID
                         && x.DatumOd.Date == datum.Date
-                        && TimeOnly.FromTimeSpan(x.DatumOd.TimeOfDay) <= vrijeme.AddHours(sati)
+                        && TimeOnly.FromTimeSpan(x.DatumOd.TimeOfDay) <= vrijeme.AddHours(trajanje)
                         && vrijeme <= TimeOnly.FromTimeSpan(x.DatumOd.TimeOfDay).AddHours(x.SatiTrajanja)));
 
                     List<Vez> slobodniVezovi = vezovi.Except(fVezoviPrivezi)
@@ -152,18 +189,31 @@ namespace tskobic_zadaca_2
                     if (slobodniVezovi.Count > 0)
                     {
                         Vez vez = Utils.PronadjiNajekonomicnijiVez(slobodniVezovi);
-                        Privez privez = new Privez(vez.ID, id, datum, datum.AddHours(sati));
+                        Privez privez = new Privez(vez.ID, idBrod, datum, datum.AddHours(trajanje));
                         bls.BrodskaLuka.Privezi.Add(privez);
+                        bls.BrodskaLuka.Dnevnik.Add(new Zapis(VrstaZahtjeva.ZP, idBrod,
+                            false, datum, datum.AddHours(trajanje)));
+                        ZapisiPoruku(kanal, $"Brodu s ID-em {brod.ID} odobren privez na vez {vez.ID}.");
                         Console.WriteLine("Naredba uspješna.");
                         return;
                     }
-                    Console.WriteLine("Naredba neuspješna, ne postoji slobodan vez.");
-                    return;
+                    else
+                    {
+                        poruka = $"Brodu s ID-em {brod.ID} odbijen privez na vez, ne postoji slobodan vez";
+                    }
                 }
-                Console.WriteLine($"Naredba neuspješna, ne postoji odgovarajući vez za brod s ID-em {id}");
-                return;
+                else
+                {
+                    poruka = $"Brodu s ID-em {brod.ID} odbijen privez na vez, ne postoji odgovarajući vez.";
+                }
             }
-            Console.WriteLine("Naredba neuspješna, brod je već privezan.");
+            else
+            {
+                poruka = $"Brodu s ID-em {brod.ID} odbijen privez na vez, brod je već privezan.";
+            }
+            bls.BrodskaLuka.Dnevnik.Add(new Zapis(VrstaZahtjeva.ZP, idBrod, true));
+            ZapisiPoruku(kanal, $"{kanal.Frekvencija}: {poruka}");
+            Console.WriteLine(poruka);
         }
 
         private static void IspisStatusaVezova()
@@ -186,7 +236,8 @@ namespace tskobic_zadaca_2
                 && TimeOnly.FromTimeSpan(x.DatumOd.TimeOfDay) <= vrijeme
                 && vrijeme <= TimeOnly.FromTimeSpan(x.DatumOd.TimeOfDay).AddHours(x.SatiTrajanja)));
 
-            List<Vez> zauzetiVezovi = fVezoviPrivezi.Union(fVezoviRasporedi).Union(fVezoviRezervacije).Distinct().ToList();
+            List<Vez> zauzetiVezovi = fVezoviPrivezi.Union(fVezoviRasporedi)
+                .Union(fVezoviRezervacije).Distinct().ToList();
             List<Vez> slobodniVezovi = vezovi.Except(zauzetiVezovi).ToList();
 
             if (bls.Zaglavlje)
@@ -349,6 +400,109 @@ namespace tskobic_zadaca_2
             }
         }
 
+        private static void SpajanjeNaKanal(int idBrod, int frekvencija, bool odjava)
+        {
+            BrodskaLukaSingleton bls = BrodskaLukaSingleton.Instanca();
+            List<Kanal> kanali = bls.BrodskaLuka!.Kanali;
+
+            Kanal? kanal = kanali.Find(x => x.Frekvencija == frekvencija);
+            if (kanal == null)
+            {
+                Console.WriteLine("Naredbna neuspješna, uneseni kanal ne postoji.");
+                return;
+            }
+            Brod? brod = bls.BrodskaLuka!.Brodovi.Find(x => x.ID == idBrod);
+            if (brod == null)
+            {
+                Console.WriteLine("Naredba neuspješna, brod s proslijeđenim ID-em ne postoji.");
+                return;
+            }
+            if (!odjava)
+            {
+                if (kanal.Zauzet())
+                {
+                    Console.WriteLine("Naredba neuspješna, maksimalan broj komunikacija na kanalu.");
+                    return;
+                }
+                if (kanali.Exists(x => x.Observers.Contains(brod)))
+                {
+                    Console.WriteLine("Naredba neuspješna, brod već ima aktivnu komunikaciju");
+                    return;
+                }
+                kanal.Attach(brod);
+                Console.WriteLine("Naredba uspješna");
+            }
+            else if (odjava)
+            {
+                if (kanal.Observers.Contains(brod))
+                {
+                    DateTime vrijeme = bls.VirtualniSat.VirtualnoVrijeme;
+                    Privez? privez = bls.BrodskaLuka!.Privezi.Find(x => x.IdBrod == brod.ID
+                        && x.VrijemeOd <= vrijeme && vrijeme <= x.VrijemeDo);
+                    if (privez != null)
+                    {
+                        privez.VrijemeDo = vrijeme;
+                    }
+                    kanal.Detach(brod);
+                    Console.WriteLine($"Naredba uspješna, brod {idBrod} je odjavljen sa kanal {frekvencija}.");
+                }
+                else
+                {
+                    Console.WriteLine($"Naredba neuspješna, ne postoji aktivna komunikacija "
+                        + $"na kanalu {frekvencija} za brod {idBrod}.");
+                }
+            }
+        }
+
+        public static void ZapisiPoruku(int idBrod, string poruka)
+        {
+            BrodskaLukaSingleton bls = BrodskaLukaSingleton.Instanca();
+            Brod? brod = bls.BrodskaLuka!.Brodovi.Find(x => x.ID == idBrod);
+            if (brod == null)
+            {
+                return;
+            }
+            List<Kanal> kanali = bls.BrodskaLuka!.Kanali;
+            Kanal? kanal = kanali.Find(x => x.Observers.Contains(brod));
+            if (kanal != null)
+            {
+                kanal.SetState(poruka);
+            }
+        }
+
+        public static void ZapisiPoruku(Kanal kanal, string poruka)
+        {
+            kanal.SetState(poruka);
+        }
+
+        public static void StatusBroda(int idBrod)
+        {
+            BrodskaLukaSingleton bls = BrodskaLukaSingleton.Instanca();
+            Brod? brod = bls.BrodskaLuka!.Brodovi.Find(x => x.ID == idBrod);
+            if (brod == null)
+            {
+                Console.WriteLine($"Brod s proslijeđenim ID-em {idBrod} ne postoji.");
+                return;
+            }
+
+            IHandler handler = DohvatiLanacHandlera();
+            handler.Handle(idBrod);
+        }
+
+        public static IHandler DohvatiLanacHandlera()
+        {
+            IHandler rasporedHandler = new RasporedHandler();
+            IHandler rezervacijaHandler = new RezervacijaHandler();
+            IHandler privezHandler = new PrivezHandler();
+
+            rasporedHandler.SetNext(rezervacijaHandler);
+            rezervacijaHandler.SetNext(privezHandler);
+
+            return rasporedHandler;
+        }
+        #endregion
+
+        #region Main metoda
         static void Main(string[] args)
         {
             Regex rg = new Regex(Konstante.UlazniArgumenti);
@@ -417,7 +571,9 @@ namespace tskobic_zadaca_2
                             {
                                 bls.VirtualniSat.IzvrsiVirtualniPomak();
                                 Ispis.VirtualniSat();
-                                PrivezRezerviranogBroda(ulaz.Substring(3));
+                                int idBrod = int.Parse(ulaz.Substring(3));
+                                ZapisiPoruku(idBrod, ulaz);
+                                PrivezRezerviranogBroda(idBrod);
                                 break;
                             }
                         case string ulaz when new Regex(Konstante.ZahtjevSlobPriveza).IsMatch(ulaz):
@@ -425,7 +581,28 @@ namespace tskobic_zadaca_2
                                 bls.VirtualniSat.IzvrsiVirtualniPomak();
                                 Ispis.VirtualniSat();
                                 string[] podaci = ulaz.Split(" ");
-                                PrivezSlobodnogBroda(podaci[1], podaci[2]);
+                                int idBrod = int.Parse(podaci[1]);
+                                int trajanje = int.Parse(podaci[2]);
+                                ZapisiPoruku(idBrod, ulaz);
+                                PrivezSlobodnogBroda(idBrod, trajanje);
+                                break;
+                            }
+                        case string ulaz when new Regex(Konstante.SpajanjeNaKanal).IsMatch(ulaz):
+                            {
+                                bls.VirtualniSat.IzvrsiVirtualniPomak();
+                                Ispis.VirtualniSat();
+                                string[] opcije = ulaz.Split(" ");
+                                int idBrod = int.Parse(opcije[1]);
+                                int frekvencija = int.Parse(opcije[2]);
+                                if (opcije.Length == 3)
+                                {
+                                    SpajanjeNaKanal(idBrod, frekvencija, false);
+                                }
+                                else if (opcije.Length == 4)
+                                {
+                                    ZapisiPoruku(idBrod, ulaz);
+                                    SpajanjeNaKanal(idBrod, frekvencija, true);
+                                }
                                 break;
                             }
                         case string ulaz when new Regex(Konstante.UredjenjeIspisa).IsMatch(ulaz):
@@ -439,8 +616,16 @@ namespace tskobic_zadaca_2
                             {
                                 bls.VirtualniSat.IzvrsiVirtualniPomak();
                                 Ispis.VirtualniSat();
-                                string[] podaci = ulaz.Split(" ");
                                 IspisZauzetihVezova(ulaz.Substring(3));
+                                break;
+                            }
+                        case string ulaz when new Regex(Konstante.StatusBroda).IsMatch(ulaz):
+                            {
+                                bls.VirtualniSat.IzvrsiVirtualniPomak();
+                                Ispis.VirtualniSat();
+                                string[] podaci = ulaz.Split(" ");
+                                int idBrod = int.Parse(podaci[1]);
+                                StatusBroda(idBrod);
                                 break;
                             }
                         case "Q":
@@ -465,5 +650,6 @@ namespace tskobic_zadaca_2
                 Ispis.GreskaArgumenti();
             }
         }
+        #endregion
     }
 }
