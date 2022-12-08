@@ -14,13 +14,9 @@ namespace tskobic_zadaca_2.ChainOfResponsibility
         {
             BrodskaLukaSingleton bls = BrodskaLukaSingleton.Instanca();
             DateTime datum = bls.VirtualniSat.VirtualnoVrijeme;
-            TimeOnly vrijeme = TimeOnly.FromTimeSpan(datum.TimeOfDay);
-            DayOfWeek dan = datum.DayOfWeek;
 
             Privez? privez = bls.BrodskaLuka!.Privezi.Find(x => x.IdBrod == idBrod
-                && x.VrijemeOd.Date.Equals(datum.Date)
-                && TimeOnly.FromTimeSpan(x.VrijemeOd.TimeOfDay) <= vrijeme
-                && TimeOnly.FromTimeSpan(x.VrijemeDo.TimeOfDay) > vrijeme);
+                && x.VrijemeOd <= datum && datum <= x.VrijemeDo);
             if (privez != null)
             {
                 Console.WriteLine($"Status broda {idBrod}: Trenutno je privezan na vez {privez.IdVez}.");

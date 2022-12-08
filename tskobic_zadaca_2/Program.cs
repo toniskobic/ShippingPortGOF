@@ -90,14 +90,12 @@ namespace tskobic_zadaca_2
             TimeOnly vrijeme = TimeOnly.FromTimeSpan(datum.TimeOfDay);
             DayOfWeek dan = datum.DayOfWeek;
             Privez? postojeciPrivez = bls.BrodskaLuka.Privezi.Find(x => x.IdBrod == idBrod
-                && x.VrijemeOd.Date.Equals(datum.Date)
-                && TimeOnly.FromTimeSpan(x.VrijemeOd.TimeOfDay) <= vrijeme
-                && TimeOnly.FromTimeSpan(x.VrijemeDo.TimeOfDay) > vrijeme);
+                && x.VrijemeOd <= datum && datum <= x.VrijemeDo);
             string poruka = "";
             if (postojeciPrivez == null)
             {
                 Raspored? raspored = bls.BrodskaLuka.Rasporedi.Find(x => x.IdBrod == idBrod
-                    && x.DaniUTjednu.Contains(dan) && x.VrijemeOd <= vrijeme && x.VrijemeDo > vrijeme);
+                    && x.DaniUTjednu.Contains(dan) && x.VrijemeOd <= vrijeme && vrijeme <= x.VrijemeDo);
                 if (raspored != null)
                 {
                     DateTime vrijemeDo = datum.Date.Add(raspored.VrijemeDo.ToTimeSpan());
@@ -112,7 +110,7 @@ namespace tskobic_zadaca_2
                 {
                     Rezervacija? rezervacija = bls.BrodskaLuka.Rezervacije.Find(x => x.IdBrod == idBrod
                         && x.DatumOd.Date.Equals(datum.Date) && TimeOnly.FromDateTime(x.DatumOd) <= vrijeme
-                        && TimeOnly.FromDateTime(x.DatumOd).AddHours(x.SatiTrajanja) > vrijeme);
+                        && vrijeme <= TimeOnly.FromDateTime(x.DatumOd).AddHours(x.SatiTrajanja));
                     if (rezervacija != null)
                     {
                         DateTime vrijemeDo = rezervacija.DatumOd.AddHours(rezervacija.SatiTrajanja);
@@ -135,7 +133,7 @@ namespace tskobic_zadaca_2
                 poruka = $"Brodu s ID-em {brod.ID} odbijen privez na vez, već je privezan.";
             }
             bls.BrodskaLuka.Dnevnik.Add(new Zapis(VrstaZahtjeva.ZD, idBrod, true));
-            ZapisiPoruku(kanal, $"{kanal.Frekvencija}: {poruka}");
+            ZapisiPoruku(kanal, $"{poruka}");
             Console.WriteLine(poruka);
         }
 
@@ -160,9 +158,7 @@ namespace tskobic_zadaca_2
             TimeOnly vrijeme = TimeOnly.FromTimeSpan(datum.TimeOfDay);
             DayOfWeek dan = datum.DayOfWeek;
             Privez? postojeciPrivez = bls.BrodskaLuka.Privezi.Find(x => x.IdBrod == idBrod
-                && x.VrijemeOd.Date.Equals(datum.Date)
-                && TimeOnly.FromTimeSpan(x.VrijemeOd.TimeOfDay) <= vrijeme
-                && TimeOnly.FromTimeSpan(x.VrijemeDo.TimeOfDay) > vrijeme);
+                && x.VrijemeOd <= datum && datum <= x.VrijemeDo);
             string poruka = "";
             if (postojeciPrivez == null)
             {
@@ -212,7 +208,7 @@ namespace tskobic_zadaca_2
                 poruka = $"Brodu s ID-em {brod.ID} odbijen privez na vez, brod je već privezan.";
             }
             bls.BrodskaLuka.Dnevnik.Add(new Zapis(VrstaZahtjeva.ZP, idBrod, true));
-            ZapisiPoruku(kanal, $"{kanal.Frekvencija}: {poruka}");
+            ZapisiPoruku(kanal, $"{poruka}");
             Console.WriteLine(poruka);
         }
 
