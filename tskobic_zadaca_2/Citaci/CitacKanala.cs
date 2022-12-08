@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
+﻿using System.Text.RegularExpressions;
 using tskobic_zadaca_2.Modeli;
 using tskobic_zadaca_2.Singleton;
 using tskobic_zadaca_2.Static;

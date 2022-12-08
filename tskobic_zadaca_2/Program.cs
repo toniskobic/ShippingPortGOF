@@ -491,14 +491,14 @@ namespace tskobic_zadaca_2
 
         public static IHandler DohvatiLanacHandlera()
         {
-            IHandler rasporedHandler = new RasporedHandler();
-            IHandler rezervacijaHandler = new RezervacijaHandler();
             IHandler privezHandler = new PrivezHandler();
+            IHandler rezervacijaHandler = new RezervacijaHandler();
+            IHandler rasporedHandler = new RasporedHandler();
 
-            rasporedHandler.SetNext(rezervacijaHandler);
-            rezervacijaHandler.SetNext(privezHandler);
+            privezHandler.SetNext(rezervacijaHandler);
+            rezervacijaHandler.SetNext(rasporedHandler);
 
-            return rasporedHandler;
+            return privezHandler;
         }
         #endregion
 

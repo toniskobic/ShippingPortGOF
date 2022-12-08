@@ -2,7 +2,7 @@
 {
     public abstract class BaseHandler : IHandler
     {
-        private IHandler? NextHandler { get; set; }
+        protected IHandler? NextHandler { get; set; }
 
         public BaseHandler()
         {
