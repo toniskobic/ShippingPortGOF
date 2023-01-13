@@ -13,7 +13,7 @@ namespace tskobic_zadaca_3.ChainOfResponsibility
         public override void Handle(int idBrod)
         {
             BrodskaLukaSingleton bls = BrodskaLukaSingleton.Instanca();
-            DateTime datum = bls.VirtualniSat.VirtualnoVrijeme;
+            DateTime datum = bls.VirtualniSatOriginator.VirtualnoVrijeme;
             TimeOnly vrijeme = TimeOnly.FromTimeSpan(datum.TimeOfDay);
             DayOfWeek dan = datum.DayOfWeek;
 

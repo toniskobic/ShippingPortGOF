@@ -55,7 +55,7 @@ namespace tskobic_zadaca_3.Citaci
                 BrodskaLuka brodskaLuka = new BrodskaLuka(celije[0], gs, gd, dubinaLuke, putnickiVezovi, poslovniVezovi, ostaliVezovi);
                 BrodskaLukaSingleton bls = BrodskaLukaSingleton.Instanca();
                 bls.BrodskaLuka = brodskaLuka;
-                bls.VirtualniSat.VirtualnoVrijeme = virtualnoVrijeme;
+                bls.VirtualniSatOriginator.VirtualnoVrijeme = virtualnoVrijeme;
             }
             catch (Exception)
             {

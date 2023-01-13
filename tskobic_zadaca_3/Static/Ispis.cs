@@ -83,7 +83,7 @@ namespace tskobic_zadaca_3.Static
         public static void VirtualniSat()
         {
             BrodskaLukaSingleton bls = BrodskaLukaSingleton.Instanca();
-            Console.WriteLine($"Virtualni sat: {bls.VirtualniSat.VirtualnoVrijeme:dd.MM.yyyy. HH:mm:ss}");
+            Console.WriteLine($"Virtualni sat: {bls.VirtualniSatOriginator.VirtualnoVrijeme:dd.MM.yyyy. HH:mm:ss}");
         }
 
         public static void GreskaArgumenti()

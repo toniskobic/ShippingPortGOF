@@ -45,5 +45,9 @@
         public static string SpajanjeNaKanal { get; } = @"^F \d{1,9} \d{1,9}(?: Q)*$";
 
         public static string StatusBroda { get; } = @"^B \d{1,9}$";
+
+        public static string SpremanjePostojecegStanja { get; } = @"^SPS "".+""$";
+
+        public static string VracanjeStanjaVezova { get; } = @"^VPS "".+""$";
     }
 }

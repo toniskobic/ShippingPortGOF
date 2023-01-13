@@ -1,6 +1,8 @@
-﻿namespace tskobic_zadaca_3.Modeli
+﻿using tskobic_zadaca_3.Memento;
+
+namespace tskobic_zadaca_3.Modeli
 {
-    public class VirtualniSat
+    public class VirtualniSatOriginator
     {
         public DateTime VirtualnoVrijeme { get; set; }
 
@@ -13,5 +15,16 @@
             StvarnoVrijeme = trenutnoVrijeme;
             VirtualnoVrijeme = VirtualnoVrijeme.Add(vrijemeProteklo);
         }
+
+        public void GetStateFromMemento(Memento.Memento m)
+        {
+            VirtualnoVrijeme = m.VirtualnoVrijeme;
+        }
+
+        public Memento.Memento SaveStateToMemento(string naziv)
+        {
+            return new Memento.Memento(naziv, VirtualnoVrijeme);
+        }
+
     }
 }

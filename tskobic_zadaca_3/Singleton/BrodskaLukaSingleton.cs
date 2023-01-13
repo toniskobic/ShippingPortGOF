@@ -1,4 +1,5 @@
-﻿using tskobic_zadaca_3.Modeli;
+﻿using tskobic_zadaca_3.Memento;
+using tskobic_zadaca_3.Modeli;
 
 namespace tskobic_zadaca_3.Singleton
 {
@@ -8,7 +9,9 @@ namespace tskobic_zadaca_3.Singleton
 
         public BrodskaLuka? BrodskaLuka { get; set; }
 
-        public VirtualniSat VirtualniSat { get; set; }
+        public VirtualniSatOriginator VirtualniSatOriginator { get; set; }
+
+        public CareTaker CareTaker { get; set; }
 
         public int BrojGreski { get; set; }
 
@@ -20,7 +23,8 @@ namespace tskobic_zadaca_3.Singleton
 
         private BrodskaLukaSingleton()
         {
-            VirtualniSat = new VirtualniSat();
+            VirtualniSatOriginator = new VirtualniSatOriginator();
+            CareTaker = new CareTaker();
             BrojGreski = 0;
             Zaglavlje = false;
             Podnozje = false;

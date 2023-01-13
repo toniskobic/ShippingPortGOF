@@ -13,7 +13,7 @@ namespace tskobic_zadaca_3.ChainOfResponsibility
         public override void Handle(int idBrod)
         {
             BrodskaLukaSingleton bls = BrodskaLukaSingleton.Instanca();
-            DateTime datum = bls.VirtualniSat.VirtualnoVrijeme;
+            DateTime datum = bls.VirtualniSatOriginator.VirtualnoVrijeme;
 
             Privez? privez = bls.BrodskaLuka!.Privezi.Find(x => x.IdBrod == idBrod
                 && x.VrijemeOd <= datum && datum <= x.VrijemeDo);

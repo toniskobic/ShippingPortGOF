@@ -86,7 +86,7 @@ namespace tskobic_zadaca_3
                     + $"s kapetanijom da bi zatražio privez.");
                 return;
             }
-            DateTime datum = bls.VirtualniSat.VirtualnoVrijeme;
+            DateTime datum = bls.VirtualniSatOriginator.VirtualnoVrijeme;
             TimeOnly vrijeme = TimeOnly.FromTimeSpan(datum.TimeOfDay);
             DayOfWeek dan = datum.DayOfWeek;
             Privez? postojeciPrivez = bls.BrodskaLuka.Privezi.Find(x => x.IdBrod == idBrod
@@ -154,7 +154,7 @@ namespace tskobic_zadaca_3
                     + $"s kapetanijom da bi zatražio privez.");
                 return;
             }
-            DateTime datum = bls.VirtualniSat.VirtualnoVrijeme;
+            DateTime datum = bls.VirtualniSatOriginator.VirtualnoVrijeme;
             TimeOnly vrijeme = TimeOnly.FromTimeSpan(datum.TimeOfDay);
             DayOfWeek dan = datum.DayOfWeek;
             Privez? postojeciPrivez = bls.BrodskaLuka.Privezi.Find(x => x.IdBrod == idBrod
@@ -217,7 +217,7 @@ namespace tskobic_zadaca_3
             BrodskaLukaSingleton bls = BrodskaLukaSingleton.Instanca();
             List<Vez> vezovi = bls.BrodskaLuka!.Vezovi;
 
-            DateTime datum = bls.VirtualniSat.VirtualnoVrijeme;
+            DateTime datum = bls.VirtualniSatOriginator.VirtualnoVrijeme;
             TimeOnly vrijeme = TimeOnly.FromTimeSpan(datum.TimeOfDay);
             DayOfWeek dan = datum.DayOfWeek;
 
@@ -432,7 +432,7 @@ namespace tskobic_zadaca_3
             {
                 if (kanal.Observers.Contains(brod))
                 {
-                    DateTime vrijeme = bls.VirtualniSat.VirtualnoVrijeme;
+                    DateTime vrijeme = bls.VirtualniSatOriginator.VirtualnoVrijeme;
                     Privez? privez = bls.BrodskaLuka!.Privezi.Find(x => x.IdBrod == brod.ID
                         && x.VrijemeOd <= vrijeme && vrijeme <= x.VrijemeDo);
                     if (privez != null)
@@ -521,7 +521,7 @@ namespace tskobic_zadaca_3
                     Ispis.GreskaInicijalizacije();
                     return;
                 }
-                bls.VirtualniSat.StvarnoVrijeme = DateTime.Now;
+                bls.VirtualniSatOriginator.StvarnoVrijeme = DateTime.Now;
 
                 while (!KrajPrograma)
                 {
@@ -530,14 +530,14 @@ namespace tskobic_zadaca_3
                     {
                         case "I":
                             {
-                                bls.VirtualniSat.IzvrsiVirtualniPomak();
+                                bls.VirtualniSatOriginator.IzvrsiVirtualniPomak();
                                 Ispis.VirtualniSat();
                                 IspisStatusaVezova();
                                 break;
                             }
                         case string ulaz when new Regex(Konstante.IspisVezova).IsMatch(ulaz):
                             {
-                                bls.VirtualniSat.IzvrsiVirtualniPomak();
+                                bls.VirtualniSatOriginator.IzvrsiVirtualniPomak();
                                 Ispis.VirtualniSat();
                                 string[] podaci = ulaz.Split(" ");
                                 if (Konstante.VrsteVezova.Contains(podaci[1]))
@@ -550,22 +550,22 @@ namespace tskobic_zadaca_3
                             }
                         case string ulaz when new Regex(Konstante.VirtualnoVrijeme).IsMatch(ulaz):
                             {
-                                bls.VirtualniSat.StvarnoVrijeme = DateTime.Now;
-                                bls.VirtualniSat.VirtualnoVrijeme = DateTime.Parse(ulaz.Substring(3));
+                                bls.VirtualniSatOriginator.StvarnoVrijeme = DateTime.Now;
+                                bls.VirtualniSatOriginator.VirtualnoVrijeme = DateTime.Parse(ulaz.Substring(3));
                                 Ispis.VirtualniSat();
                                 break;
                             }
                         case string ulaz when new Regex(Konstante.ZahtjevRezervacije).IsMatch(ulaz):
                             {
                                 Creator creator = new RezervacijeCreator();
-                                bls.VirtualniSat.IzvrsiVirtualniPomak();
+                                bls.VirtualniSatOriginator.IzvrsiVirtualniPomak();
                                 Ispis.VirtualniSat();
                                 creator.ProcitajPodatke(ulaz.Substring(3));
                                 break;
                             }
                         case string ulaz when new Regex(Konstante.ZahtjevRezPriveza).IsMatch(ulaz):
                             {
-                                bls.VirtualniSat.IzvrsiVirtualniPomak();
+                                bls.VirtualniSatOriginator.IzvrsiVirtualniPomak();
                                 Ispis.VirtualniSat();
                                 int idBrod = int.Parse(ulaz.Substring(3));
                                 ZapisiPoruku(idBrod, ulaz);
@@ -574,7 +574,7 @@ namespace tskobic_zadaca_3
                             }
                         case string ulaz when new Regex(Konstante.ZahtjevSlobPriveza).IsMatch(ulaz):
                             {
-                                bls.VirtualniSat.IzvrsiVirtualniPomak();
+                                bls.VirtualniSatOriginator.IzvrsiVirtualniPomak();
                                 Ispis.VirtualniSat();
                                 string[] podaci = ulaz.Split(" ");
                                 int idBrod = int.Parse(podaci[1]);
@@ -585,7 +585,7 @@ namespace tskobic_zadaca_3
                             }
                         case string ulaz when new Regex(Konstante.SpajanjeNaKanal).IsMatch(ulaz):
                             {
-                                bls.VirtualniSat.IzvrsiVirtualniPomak();
+                                bls.VirtualniSatOriginator.IzvrsiVirtualniPomak();
                                 Ispis.VirtualniSat();
                                 string[] opcije = ulaz.Split(" ");
                                 int idBrod = int.Parse(opcije[1]);
@@ -603,37 +603,74 @@ namespace tskobic_zadaca_3
                             }
                         case string ulaz when new Regex(Konstante.UredjenjeIspisa).IsMatch(ulaz):
                             {
-                                bls.VirtualniSat.IzvrsiVirtualniPomak();
+                                bls.VirtualniSatOriginator.IzvrsiVirtualniPomak();
                                 Ispis.VirtualniSat();
                                 UredjenjeIspisa(ulaz);
                                 break;
                             }
                         case string ulaz when new Regex(Konstante.IspisZauzetihVezova).IsMatch(ulaz):
                             {
-                                bls.VirtualniSat.IzvrsiVirtualniPomak();
+                                bls.VirtualniSatOriginator.IzvrsiVirtualniPomak();
                                 Ispis.VirtualniSat();
                                 IspisZauzetihVezova(ulaz.Substring(3));
                                 break;
                             }
                         case string ulaz when new Regex(Konstante.StatusBroda).IsMatch(ulaz):
                             {
-                                bls.VirtualniSat.IzvrsiVirtualniPomak();
+                                bls.VirtualniSatOriginator.IzvrsiVirtualniPomak();
                                 Ispis.VirtualniSat();
                                 string[] podaci = ulaz.Split(" ");
                                 int idBrod = int.Parse(podaci[1]);
                                 StatusBroda(idBrod);
                                 break;
                             }
+                        case string ulaz when new Regex(Konstante.SpremanjePostojecegStanja).IsMatch(ulaz):
+                            {
+                                bls.VirtualniSatOriginator.IzvrsiVirtualniPomak();
+                                Ispis.VirtualniSat();
+                                string naziv = ulaz.Substring(4).Trim('"');
+                                if (bls.CareTaker.Get(naziv) != null)
+                                {
+                                    Console.WriteLine("Naredba neuspješna, " +
+                                        "već postoji prethodno spremljeno stanje s tim nazivom!");
+                                }
+                                else
+                                {
+                                    bls.CareTaker.Add(bls.VirtualniSatOriginator.SaveStateToMemento(naziv));
+                                    Console.WriteLine("Naredba uspješna");
+                                }
+                                break;
+                            }
+                        case string ulaz when new Regex(Konstante.VracanjeStanjaVezova  ).IsMatch(ulaz):
+                            {
+                                bls.VirtualniSatOriginator.IzvrsiVirtualniPomak();
+                                Ispis.VirtualniSat();
+                                string naziv = ulaz.Substring(4).Trim('"');
+                                Memento.Memento? memento = bls.CareTaker.Get(naziv);
+                                if (memento == null)
+                                {
+                                    Console.WriteLine("Naredba neuspješna, " +
+                                        "ne postoji prethodno spremljeno stanje s tim nazivom!");
+                                }
+                                else
+                                {
+                                    bls.VirtualniSatOriginator.StvarnoVrijeme = DateTime.Now;
+                                    bls.VirtualniSatOriginator.VirtualnoVrijeme = memento.VirtualnoVrijeme;
+                                    Console.WriteLine("Naredba uspješna");
+                                    Ispis.VirtualniSat();
+                                }
+                                break;
+                            }
                         case "Q":
                             {
-                                bls.VirtualniSat.IzvrsiVirtualniPomak();
+                                bls.VirtualniSatOriginator.IzvrsiVirtualniPomak();
                                 Ispis.VirtualniSat();
                                 KrajPrograma = true;
                                 break;
                             }
                         default:
                             {
-                                bls.VirtualniSat.IzvrsiVirtualniPomak();
+                                bls.VirtualniSatOriginator.IzvrsiVirtualniPomak();
                                 Ispis.VirtualniSat();
                                 Ispis.GreskaNaredba();
                                 break;
