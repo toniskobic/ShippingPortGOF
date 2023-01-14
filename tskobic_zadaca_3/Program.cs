@@ -1,6 +1,7 @@
 ﻿using System.Globalization;
 using System.Text.RegularExpressions;
 using tskobic_zadaca_3.ChainOfResponsibility;
+using tskobic_zadaca_3.Composite;
 using tskobic_zadaca_3.FactoryMethod;
 using tskobic_zadaca_3.Modeli;
 using tskobic_zadaca_3.Singleton;
@@ -17,7 +18,6 @@ namespace tskobic_zadaca_3
         private static bool Inicijalizacija(List<Group> grupe)
         {
             BrodskaLukaSingleton bls = BrodskaLukaSingleton.Instanca();
-
             UcitajPodatke(new LukaCreator(), grupe, "-l");
             if (bls.BrodskaLuka == null)
             {
@@ -25,23 +25,27 @@ namespace tskobic_zadaca_3
             }
 
             UcitajPodatke(new MoloviCreator(), grupe, "-m");
-            if (bls.BrodskaLuka.Molovi.Count == 0)
+            List<IComponent> molovi = bls.BrodskaLuka!.Find(c => c is Mol).ToList();
+            if (molovi.Count == 0)
             {
                 return false;
             }
 
             UcitajPodatke(new VezoviCreator(), grupe, "-v");
-            if (bls.BrodskaLuka.Vezovi.Count == 0)
+            List<IComponent> vezovi = bls.BrodskaLuka!.Find(c => c is Vez);
+            if (vezovi.Count == 0)
             {
                 return false;
             }
 
             UcitajPodatke(new MoloviVezoviCreator(), grupe, "-mv");
-            if (!bls.BrodskaLuka.Vezovi.Exists(x => x.IdMol != null))
+            vezovi = bls.BrodskaLuka!.Find(c => c is Vez);
+            if (!vezovi.Exists(v => ((Vez)v).IdMol != null))
             {
                 return false;
             }
-            bls.BrodskaLuka.Vezovi.RemoveAll(x => x.IdMol == null);
+            bls.BrodskaLuka.RemoveAll(c => c is Vez vez && vez.IdMol == null);
+            vezovi = bls.BrodskaLuka!.Find(c => c is Vez);
 
             UcitajPodatke(new KanaliCreator(), grupe, "-k");
             if (bls.BrodskaLuka.Kanali.Count == 0)
@@ -78,7 +82,7 @@ namespace tskobic_zadaca_3
                 Console.WriteLine($"Brod s proslijeđenim ID-em {idBrod} ne postoji.");
                 return;
             }
-            List<Kanal> kanali = bls.BrodskaLuka!.Kanali;
+            List<Kanal> kanali = bls.BrodskaLuka.Kanali;
             Kanal? kanal = kanali.Find(x => x.Observers.Contains(brod));
             if (kanal == null)
             {
@@ -146,7 +150,7 @@ namespace tskobic_zadaca_3
                 Console.WriteLine($"Brod s proslijeđenim ID-em {idBrod} ne postoji.");
                 return;
             }
-            List<Kanal> kanali = bls.BrodskaLuka!.Kanali;
+            List<Kanal> kanali = bls.BrodskaLuka.Kanali;
             Kanal? kanal = kanali.Find(x => x.Observers.Contains(brod));
             if (kanal == null)
             {
@@ -215,7 +219,7 @@ namespace tskobic_zadaca_3
         private static void IspisStatusaVezova()
         {
             BrodskaLukaSingleton bls = BrodskaLukaSingleton.Instanca();
-            List<Vez> vezovi = bls.BrodskaLuka!.Vezovi;
+            List<Vez> vezovi = bls.BrodskaLuka!.Find(c => c is Vez).Cast<Vez>().ToList();
 
             DateTime datum = bls.VirtualniSatOriginator.VirtualnoVrijeme;
             TimeOnly vrijeme = TimeOnly.FromTimeSpan(datum.TimeOfDay);
@@ -289,7 +293,6 @@ namespace tskobic_zadaca_3
         private static void IspisVezovaVrste(string vrsta, string status, string datumOd, string datumDo)
         {
             BrodskaLukaSingleton bls = BrodskaLukaSingleton.Instanca();
-            List<Vez> vezovi = bls.BrodskaLuka!.Vezovi;
 
             Utils.ProvjeriPretvorbuUDatum(datumOd, out DateTime intervalOd);
             Utils.ProvjeriPretvorbuUDatum(datumDo, out DateTime intervalDo);
@@ -298,16 +301,16 @@ namespace tskobic_zadaca_3
         private static void IspisZauzetihVezova(string ulaz)
         {
             BrodskaLukaSingleton bls = BrodskaLukaSingleton.Instanca();
-            List<Vez> vezovi = bls.BrodskaLuka!.Vezovi;
+            List<IComponent> vezovi = bls.BrodskaLuka!.Find(c => c is Vez);
 
             DateTime.TryParseExact(ulaz, "dd.MM.yyyy. HH:mm", CultureInfo.InvariantCulture,
                 DateTimeStyles.None, out DateTime datum);
             TimeOnly vrijeme = TimeOnly.FromTimeSpan(datum.TimeOfDay);
             DayOfWeek dan = datum.DayOfWeek;
 
-            List<Privez> privezi = bls.BrodskaLuka!.Privezi;
-            List<Raspored> rasporedi = bls.BrodskaLuka!.Rasporedi;
-            List<Rezervacija> rezervacije = bls.BrodskaLuka!.Rezervacije;
+            List<Privez> privezi = bls.BrodskaLuka.Privezi;
+            List<Raspored> rasporedi = bls.BrodskaLuka.Rasporedi;
+            List<Rezervacija> rezervacije = bls.BrodskaLuka.Rezervacije;
 
             List<IElement> elementi = privezi.ToList<IElement>().Concat(rasporedi).Concat(rezervacije).ToList();
 
@@ -319,7 +322,7 @@ namespace tskobic_zadaca_3
                 int? id = element.Accept(elementVisitor);
                 if (id != null)
                 {
-                    Vez? vez = vezovi.Find(x => x.ID == id);
+                    Vez? vez = (Vez?)vezovi.Find(x => x.GetId() == id);
                     if (vez != null && !zauzetiVezovi.Contains(vez))
                     {
                         zauzetiVezovi.Add(vez);
@@ -407,7 +410,7 @@ namespace tskobic_zadaca_3
                 Console.WriteLine("Naredbna neuspješna, uneseni kanal ne postoji.");
                 return;
             }
-            Brod? brod = bls.BrodskaLuka!.Brodovi.Find(x => x.ID == idBrod);
+            Brod? brod = bls.BrodskaLuka.Brodovi.Find(x => x.ID == idBrod);
             if (brod == null)
             {
                 Console.WriteLine("Naredba neuspješna, brod s proslijeđenim ID-em ne postoji.");
@@ -433,7 +436,7 @@ namespace tskobic_zadaca_3
                 if (kanal.Observers.Contains(brod))
                 {
                     DateTime vrijeme = bls.VirtualniSatOriginator.VirtualnoVrijeme;
-                    Privez? privez = bls.BrodskaLuka!.Privezi.Find(x => x.IdBrod == brod.ID
+                    Privez? privez = bls.BrodskaLuka.Privezi.Find(x => x.IdBrod == brod.ID
                         && x.VrijemeOd <= vrijeme && vrijeme <= x.VrijemeDo);
                     if (privez != null)
                     {
@@ -458,7 +461,7 @@ namespace tskobic_zadaca_3
             {
                 return;
             }
-            List<Kanal> kanali = bls.BrodskaLuka!.Kanali;
+            List<Kanal> kanali = bls.BrodskaLuka.Kanali;
             Kanal? kanal = kanali.Find(x => x.Observers.Contains(brod));
             if (kanal != null)
             {

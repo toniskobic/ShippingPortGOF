@@ -1,5 +1,5 @@
 ﻿using System.Text.RegularExpressions;
-using tskobic_zadaca_3.Modeli;
+using tskobic_zadaca_3.Composite;
 using tskobic_zadaca_3.Singleton;
 using tskobic_zadaca_3.Static;
 
@@ -34,9 +34,10 @@ namespace tskobic_zadaca_3.Citaci
                         }
 
                         BrodskaLukaSingleton bls = BrodskaLukaSingleton.Instanca();
-                        if (!bls.BrodskaLuka!.Molovi.Exists(x => x.ID == id))
+                        List<IComponent> molovi = bls.BrodskaLuka!.Find(c => c is Mol);
+                        if (!molovi.Exists(x => x.GetId()== id))
                         {
-                            bls.BrodskaLuka.Molovi.Add(new Mol(id, celije[1]));
+                            bls.BrodskaLuka.Add(new Mol(id, celije[1]));
                         }
                     }
                 }

@@ -1,4 +1,5 @@
 ﻿using System.Globalization;
+using tskobic_zadaca_3.Composite;
 using tskobic_zadaca_3.Modeli;
 using tskobic_zadaca_3.Singleton;
 
@@ -43,9 +44,9 @@ namespace tskobic_zadaca_3.Static
                     }
             }
             BrodskaLukaSingleton bls = BrodskaLukaSingleton.Instanca();
-            BrodskaLuka? brodskaLuka = bls.BrodskaLuka;
-            List<Vez> vezovi = bls.BrodskaLuka!.Vezovi.FindAll(x => x.Vrsta == vez);
-            return vezovi.FindAll(x => ProvjeriBrodIVez(brod, x));
+            List<Vez> vezovi = bls.BrodskaLuka!.Find(c => c is Vez).Cast<Vez>().ToList();
+            List<Vez> odgovarajuciVezovi = vezovi.FindAll(v => v.Vrsta == vez);
+            return odgovarajuciVezovi.FindAll(v => ProvjeriBrodIVez(brod, v));
         }
 
         public static bool ProvjeriBrodIVez(Brod brod, Vez vez)
@@ -82,7 +83,7 @@ namespace tskobic_zadaca_3.Static
         public static bool ProvjeriVezove(string vrsta)
         {
             BrodskaLukaSingleton bls = BrodskaLukaSingleton.Instanca();
-            BrodskaLuka? brodskaLuka = bls.BrodskaLuka;
+            List<IComponent> vezovi = bls.BrodskaLuka!.Find(c => c is Vez);
 
             bool provjera = false;
 
@@ -90,17 +91,17 @@ namespace tskobic_zadaca_3.Static
             {
                 case "PU":
                     {
-                        provjera = brodskaLuka!.PutnickiVezovi > brodskaLuka.Vezovi.FindAll(x => x.Vrsta == "PU").Count;
+                        provjera = bls.BrodskaLuka.PutnickiVezovi > vezovi.FindAll(v => ((Vez)v).Vrsta == "PU").Count;
                         break;
                     }
                 case "PO":
                     {
-                        provjera = brodskaLuka!.PoslovniVezovi > brodskaLuka.Vezovi.FindAll(x => x.Vrsta == "PO").Count;
+                        provjera = bls.BrodskaLuka.PoslovniVezovi > vezovi.FindAll(v => ((Vez)v).Vrsta == "PO").Count;
                         break;
                     }
                 case "OS":
                     {
-                        provjera = brodskaLuka!.OstaliVezovi > brodskaLuka.Vezovi.FindAll(x => x.Vrsta == "OS").Count;
+                        provjera = bls.BrodskaLuka.OstaliVezovi > vezovi.FindAll(v => ((Vez)v).Vrsta == "OS").Count;
                         break;
                     }
             }

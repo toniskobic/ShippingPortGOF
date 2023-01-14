@@ -1,4 +1,5 @@
 ﻿using System.Text.RegularExpressions;
+using tskobic_zadaca_3.Composite;
 using tskobic_zadaca_3.Modeli;
 using tskobic_zadaca_3.Singleton;
 using tskobic_zadaca_3.Static;
@@ -41,14 +42,16 @@ namespace tskobic_zadaca_3.Citaci
                         List<int> vezovi = zapisi.Select(int.Parse).ToList();
 
                         BrodskaLukaSingleton bls = BrodskaLukaSingleton.Instanca();
-                        if (!bls.BrodskaLuka!.Molovi.Exists(x => x.ID == idMol))
+                        List<IComponent> molovi = bls.BrodskaLuka!.Find(c => c is Mol);
+                        if (!molovi.Exists(x => x.GetId() == idMol))
                         {
                             Ispis.GreskaNepostojeciZapis(retci[i], celije[0], putanja, idMol, "Mol");
                             continue;
                         }
                         foreach (int vez in vezovi)
                         {
-                            Vez? postojeciVez = bls.BrodskaLuka!.Vezovi.Find(x => x.ID == vez);
+                            List<IComponent> postojeciVezovi = bls.BrodskaLuka!.Find(c => c is Vez);
+                            Vez? postojeciVez = (Vez?)postojeciVezovi.Find(x => x.GetId() == vez);
                             if(postojeciVez == null)
                             {
                                 Ispis.GreskaNepostojeciZapis(retci[i], celije[1], putanja, vez, "Vez");

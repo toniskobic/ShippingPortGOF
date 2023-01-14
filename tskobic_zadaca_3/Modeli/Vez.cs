@@ -1,8 +1,9 @@
-﻿using tskobic_zadaca_3.Visitor;
+﻿using tskobic_zadaca_3.Composite;
+using tskobic_zadaca_3.Visitor;
 
 namespace tskobic_zadaca_3.Modeli
 {
-    public class Vez : IVez
+    public class Vez : IComponent, IVez
     {
         public int ID { get; set; }
 
@@ -44,6 +45,21 @@ namespace tskobic_zadaca_3.Modeli
         public string Accept(IVezVisitor visitor)
         {
             return visitor.Visit(this);
+        }
+
+        public int GetId()
+        {
+            return ID;
+        }
+
+        public string GetName()
+        {
+            return Oznaka;
+        }
+
+        public bool IsComposite()
+        {
+            return false;
         }
     }
 }

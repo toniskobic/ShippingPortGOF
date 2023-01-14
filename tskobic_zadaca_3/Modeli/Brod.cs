@@ -4,6 +4,7 @@ namespace tskobic_zadaca_3.Modeli
 {
     public class Brod : IObserver
     {
+        #region Svojstva
         public int ID { get; set; }
 
         public string OznakaBroda { get; set; }
@@ -27,7 +28,9 @@ namespace tskobic_zadaca_3.Modeli
         public int KapacitetTereta { get; set; }
 
         public string? ZadnjaPoruka { get; set; }
+        #endregion
 
+        #region Konstruktor
         public Brod(int id, string oznakaBroda, string naziv, string vrsta,
             double duljina, double sirina, double gaz, double maksBrzina,
             int kapacitetPutnika, int kapacitetOsobnihVozila, int kapacitetTereta)
@@ -44,11 +47,14 @@ namespace tskobic_zadaca_3.Modeli
             KapacitetOsobnihVozila = kapacitetOsobnihVozila;
             KapacitetTereta = kapacitetTereta;
         }
+        #endregion
 
+        #region Metode
         public void Update(ISubject s)
         {
             ZadnjaPoruka = s.GetState();
             Console.WriteLine($"Brod {ID} zaprimio poruku: '{ZadnjaPoruka}'.");
         }
+        #endregion
     }
 }

@@ -1,6 +1,6 @@
 ﻿using System.Globalization;
 using System.Text.RegularExpressions;
-using tskobic_zadaca_3.Modeli;
+using tskobic_zadaca_3.Composite;
 using tskobic_zadaca_3.Singleton;
 using tskobic_zadaca_3.Static;
 
@@ -52,7 +52,7 @@ namespace tskobic_zadaca_3.Citaci
                 int poslovniVezovi = int.Parse(celije[5]);
                 int ostaliVezovi = int.Parse(celije[6]);
 
-                BrodskaLuka brodskaLuka = new BrodskaLuka(celije[0], gs, gd, dubinaLuke, putnickiVezovi, poslovniVezovi, ostaliVezovi);
+                BrodskaLukaComposite brodskaLuka = new BrodskaLukaComposite(1, celije[0], gs, gd, dubinaLuke, putnickiVezovi, poslovniVezovi, ostaliVezovi);
                 BrodskaLukaSingleton bls = BrodskaLukaSingleton.Instanca();
                 bls.BrodskaLuka = brodskaLuka;
                 bls.VirtualniSatOriginator.VirtualnoVrijeme = virtualnoVrijeme;

@@ -1,4 +1,5 @@
 ﻿using System.Text.RegularExpressions;
+using tskobic_zadaca_3.Composite;
 using tskobic_zadaca_3.Modeli;
 using tskobic_zadaca_3.Singleton;
 using tskobic_zadaca_3.Static;
@@ -56,10 +57,11 @@ namespace tskobic_zadaca_3.Citaci
                             int maksDubina = int.Parse(celije[6]);
 
                             BrodskaLukaSingleton bls = BrodskaLukaSingleton.Instanca();
-                            if (!bls.BrodskaLuka!.Vezovi.Exists(x => x.ID == id)
+                            List<IComponent> vezovi = bls.BrodskaLuka!.Find(c => c is Vez);
+                            if (!vezovi.Exists(x => x.GetId() == id)
                                 && bls.BrodskaLuka.DubinaLuke >= maksDubina && Utils.ProvjeriVezove(celije[2]))
                             {
-                                bls.BrodskaLuka.Vezovi.Add(new Vez(id, celije[1], celije[2],
+                                bls.BrodskaLuka.Add(new Vez(id, celije[1], celije[2],
                                     cijenaPoSatu, maksDuljina, maksSirina, maksDubina));
                             }
                         }

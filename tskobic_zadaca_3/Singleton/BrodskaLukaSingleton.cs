@@ -1,4 +1,5 @@
-﻿using tskobic_zadaca_3.Memento;
+﻿using tskobic_zadaca_3.Composite;
+using tskobic_zadaca_3.Memento;
 using tskobic_zadaca_3.Modeli;
 
 namespace tskobic_zadaca_3.Singleton
@@ -7,7 +8,7 @@ namespace tskobic_zadaca_3.Singleton
     {
         private static BrodskaLukaSingleton? instanca;
 
-        public BrodskaLuka? BrodskaLuka { get; set; }
+        public BrodskaLukaComposite? BrodskaLuka { get; set; }
 
         public VirtualniSatOriginator VirtualniSatOriginator { get; set; }
 
