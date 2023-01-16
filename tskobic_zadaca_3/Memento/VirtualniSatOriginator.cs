@@ -1,6 +1,4 @@
-﻿using tskobic_zadaca_3.Memento;
-
-namespace tskobic_zadaca_3.Modeli
+﻿namespace tskobic_zadaca_3.Memento
 {
     public class VirtualniSatOriginator
     {
@@ -16,15 +14,14 @@ namespace tskobic_zadaca_3.Modeli
             VirtualnoVrijeme = VirtualnoVrijeme.Add(vrijemeProteklo);
         }
 
-        public void GetStateFromMemento(Memento.Memento m)
+        public void GetStateFromMemento(Memento m)
         {
             VirtualnoVrijeme = m.VirtualnoVrijeme;
         }
 
-        public Memento.Memento SaveStateToMemento(string naziv)
+        public Memento SaveStateToMemento(string naziv)
         {
-            return new Memento.Memento(naziv, VirtualnoVrijeme);
+            return new Memento(naziv, VirtualnoVrijeme);
         }
-
     }
 }

@@ -1,6 +1,4 @@
-﻿using tskobic_zadaca_3.Iterator;
-
-namespace tskobic_zadaca_3.Composite
+﻿namespace tskobic_zadaca_3.Composite
 {
     public interface IComponent
     {
