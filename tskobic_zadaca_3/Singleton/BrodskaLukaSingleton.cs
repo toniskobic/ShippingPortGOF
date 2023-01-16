@@ -1,6 +1,7 @@
 ﻿using tskobic_zadaca_3.Composite;
 using tskobic_zadaca_3.Memento;
 using tskobic_zadaca_3.Modeli;
+using tskobic_zadaca_3.MVC;
 
 namespace tskobic_zadaca_3.Singleton
 {
@@ -11,6 +12,10 @@ namespace tskobic_zadaca_3.Singleton
         public BrodskaLukaComposite? BrodskaLuka { get; set; }
 
         public VirtualniSatOriginator VirtualniSatOriginator { get; set; }
+
+        public Terminal Terminal { get; set; }
+
+        public Controller Controller { get; set; }
 
         public CareTaker CareTaker { get; set; }
 
@@ -25,6 +30,8 @@ namespace tskobic_zadaca_3.Singleton
         private BrodskaLukaSingleton()
         {
             VirtualniSatOriginator = new VirtualniSatOriginator();
+            Terminal = new Terminal();
+            Controller = new Controller();
             CareTaker = new CareTaker();
             BrojGreski = 0;
             Zaglavlje = false;

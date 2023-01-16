@@ -1,6 +1,4 @@
-﻿using tskobic_zadaca_3.Observer;
-
-namespace tskobic_zadaca_3.Modeli
+﻿namespace tskobic_zadaca_3.Observer
 {
     public class Kanal : ISubject
     {

@@ -1,6 +1,7 @@
 ﻿using System.Globalization;
 using tskobic_zadaca_3.Composite;
 using tskobic_zadaca_3.Modeli;
+using tskobic_zadaca_3.Observer;
 using tskobic_zadaca_3.Singleton;
 
 namespace tskobic_zadaca_3.Static

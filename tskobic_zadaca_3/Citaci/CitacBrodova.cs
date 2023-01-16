@@ -1,7 +1,7 @@
 ﻿using System.Globalization;
 using System.Text.RegularExpressions;
 using tskobic_zadaca_3.Composite;
-using tskobic_zadaca_3.Modeli;
+using tskobic_zadaca_3.Observer;
 using tskobic_zadaca_3.Singleton;
 using tskobic_zadaca_3.Static;
 

@@ -16,7 +16,7 @@
 
         public Memento? Get(string name)
         {
-            return MementoList.SingleOrDefault(m => m.Name == name);
+            return MementoList.FirstOrDefault(m => m.Name == name);
         }
     }
 }

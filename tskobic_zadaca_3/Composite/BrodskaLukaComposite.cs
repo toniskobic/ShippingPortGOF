@@ -1,5 +1,9 @@
-﻿using tskobic_zadaca_3.Iterator;
+﻿using System.Runtime.CompilerServices;
+using System.Security.Cryptography.X509Certificates;
+using tskobic_zadaca_3.Iterator;
 using tskobic_zadaca_3.Modeli;
+using tskobic_zadaca_3.Observer;
+using tskobic_zadaca_3.Visitor;
 
 namespace tskobic_zadaca_3.Composite
 {

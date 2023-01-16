@@ -1,6 +1,6 @@
-﻿using tskobic_zadaca_3.Observer;
+﻿using tskobic_zadaca_3.Singleton;
 
-namespace tskobic_zadaca_3.Modeli
+namespace tskobic_zadaca_3.Observer
 {
     public class Brod : IObserver
     {
@@ -52,8 +52,9 @@ namespace tskobic_zadaca_3.Modeli
         #region Metode
         public void Update(ISubject s)
         {
+            BrodskaLukaSingleton bls = BrodskaLukaSingleton.Instanca();
             ZadnjaPoruka = s.GetState();
-            Console.WriteLine($"Brod {ID} zaprimio poruku: '{ZadnjaPoruka}'.");
+            bls.Controller.SetModelState($"Brod {ID} zaprimio poruku: '{ZadnjaPoruka}'.");
         }
         #endregion
     }

@@ -1,5 +1,5 @@
-﻿using tskobic_zadaca_3.Modeli;
-using tskobic_zadaca_3.Singleton;
+﻿using tskobic_zadaca_3.Singleton;
+using tskobic_zadaca_3.Visitor;
 
 namespace tskobic_zadaca_3.ChainOfResponsibility
 {
@@ -19,11 +19,11 @@ namespace tskobic_zadaca_3.ChainOfResponsibility
                 && x.VrijemeOd <= datum && datum <= x.VrijemeDo);
             if (privez != null)
             {
-                Console.WriteLine($"Status broda {idBrod}: Trenutno je privezan na vez {privez.IdVez}.");
+                bls.Controller.SetModelState($"Status broda {idBrod}: Trenutno je privezan na vez {privez.IdVez}.");
             }
             else
             {
-                Console.WriteLine($"Status broda {idBrod}: Treutno nije privezan.");
+                bls.Controller.SetModelState($"Status broda {idBrod}: Treutno nije privezan.");
                 if(NextHandler != null)
                 {
                     NextHandler.Handle(idBrod);

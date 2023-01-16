@@ -1,5 +1,5 @@
-﻿using tskobic_zadaca_3.Modeli;
-using tskobic_zadaca_3.Singleton;
+﻿using tskobic_zadaca_3.Singleton;
+using tskobic_zadaca_3.Visitor;
 
 namespace tskobic_zadaca_3.ChainOfResponsibility
 {
@@ -21,10 +21,10 @@ namespace tskobic_zadaca_3.ChainOfResponsibility
                 && x.DaniUTjednu.Contains(dan) && x.VrijemeOd <= vrijeme && x.VrijemeDo > vrijeme);
             if (raspored != null)
             {
-                Console.WriteLine($"Status broda {idBrod}: Trenutno ima rezervaciju prema rasporedu");
+                bls.Controller.SetModelState($"Status broda {idBrod}: Trenutno ima rezervaciju prema rasporedu");
             } else
             {
-                Console.WriteLine($"Status broda {idBrod}: Trenutno nema rezervaciju prema rasporedu.");
+                bls.Controller.SetModelState($"Status broda {idBrod}: Trenutno nema rezervaciju prema rasporedu.");
                 if (NextHandler != null)
                 {
                     NextHandler.Handle(idBrod);

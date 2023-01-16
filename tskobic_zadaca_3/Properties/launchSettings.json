@@ -2,7 +2,7 @@
   "profiles": {
     "tskobic_zadaca_3": {
       "commandName": "Project",
-      "commandLineArgs": "-r DZ_3_raspored.csv -v DZ_3_vez.csv -l DZ_3_luka.csv -b DZ_3_brod.csv -m DZ_3_mol.csv -mv DZ_3_mol_vez.csv -k DZ_3_kanal.csv"
+      "commandLineArgs": "-l DZ_3_luka.csv -b DZ_3_brod.csv -r DZ_3_raspored.csv -v DZ_3_vez.csv -m DZ_3_mol.csv -mv DZ_3_mol_vez.csv -k DZ_3_kanal.csv -br 40 -vt 50:50 -pd R:P"
     },
     "neispravni_argumenti": {
       "commandName": "Project",
@@ -10,7 +10,7 @@
     },
     "nepostojece_datoteke": {
       "commandName": "Project",
-      "commandLineArgs": "-l DZ_3_lukadasd.csv -v DZ_3_veadadz.csv -r DZ_3_raspodadasred.csv -b DZ_3_brdadaod.csv"
+      "commandLineArgs": "-l DZ_3_lukadasd.csv -v DZ_3_veadadz.csv -r DZ_3_raspodadasred.csv -b DZ_3_brdadaod.csv -br 26 -vt 50:50 -pd R:P"
     }
   }
 }

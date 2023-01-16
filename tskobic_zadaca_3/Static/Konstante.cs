@@ -2,6 +2,8 @@
 {
     public static class Konstante
     {
+        public static string UNICODE_ESC { get; } = "\u001b[";
+
         public static string[] VrsteVezova { get; } = { "PU", "PO", "OS" };
 
         public static string[] VrsteBrodova { get; } = { "TR", "KA", "KL", "KR", "RI", "TE", "JA", "BR", "RO" };
@@ -12,13 +14,23 @@
 
         public static string[] OstaliBrodovi { get; } = { "JA", "BR", "RO" };
 
-        public static string UlazniArgumenti { get; } = @"^(?:(-r [a-zA-Z_0-9.]+\.csv)(?!.*\1) )?"
-            + @"(-(?:(?:mv)|[lvbmk]){1} [a-zA-Z_0-9.]+\.csv)(?!.*\2)(?: (-r [a-zA-Z_0-9.]+\.csv)(?!.*\3))?"
-            + @"(?: (-(?:(?:mv)|[lvbmk]){1} [a-zA-Z_0-9.]+\.csv)(?!.*\4))(?: (-r [a-zA-Z_0-9.]+\.csv)(?!.*\5))?"
-            + @"(?: (-(?:(?:mv)|[lvbmk]){1} [a-zA-Z_0-9.]+\.csv)(?!.*\6))(?: (-r [a-zA-Z_0-9.]+\.csv)(?!.*\7))?"
-            + @"(?: (-(?:(?:mv)|[lvbmk]){1} [a-zA-Z_0-9.]+\.csv)(?!.*\8))(?: (-r [a-zA-Z_0-9.]+\.csv)(?!.*\9))?"
-            + @"(?: (-(?:(?:mv)|[lvbmk]){1} [a-zA-Z_0-9.]+\.csv)(?!.*\10))(?: (-r [a-zA-Z_0-9.]+\.csv)(?!.*\11))?"
-            + @"(?: (-(?:(?:mv)|[lvbmk]){1} [a-zA-Z_0-9.]+\.csv)(?!.*\12))(?: (-r [a-zA-Z_0-9.]+\.csv)(?!.*\13))?$";
+        private static string ArgumentR { get; } = @"(-r [a-zA-Z_0-9.]+\.csv)";
+
+        private static string ObavezniArgumenti { get; } = @"(-(?:(?:(?:br) \d{2})|(?:(?:vt) "
+        + @"(?:(?:50:50)|(?:25:75)|(?:75:25)){1})|(?:(?:pd) (?:(?:R:P)|(?:P:R)){1})|(?:(?:(?:mv)"
+        + @"|[lvbmk]){1} [a-zA-Z_0-9.]+\.csv)){1})";
+
+        public static string UlazniArgumenti { get; } = @"^(?:" + $"{ArgumentR}"
+            + @"(?!.*\1) )?" + $"{ObavezniArgumenti}" + @"(?!.*\2)(?: " + $"{ArgumentR}"
+            + @"(?!.*\3))?(?: " + $"{ObavezniArgumenti}" + @"(?!.*\4))(?: " + $"{ArgumentR}"
+            + @"(?!.*\5))?(?: " + $"{ObavezniArgumenti}" + @"(?!.*\6))(?: " + $"{ArgumentR}"
+            + @"(?!.*\7))?(?: " + $"{ObavezniArgumenti}" + @"(?!.*\8))(?: " + $"{ArgumentR}"
+            + @"(?!.*\9))?(?: " + $"{ObavezniArgumenti}" + @"(?!.*\10))(?: " + $"{ArgumentR}"
+            + @"(?!.*\11))?(?: " + $"{ObavezniArgumenti}" + @"(?!.*\12))(?: " + $"{ArgumentR}"
+            + @"(?!.*\13))?(?: " + $"{ObavezniArgumenti}" + @"(?!.*\14))(?: " + $"{ArgumentR}"
+            + @"(?!.*\15))?(?: " + $"{ObavezniArgumenti}" + @"(?!.*\16))(?: " + $"{ArgumentR}"
+            + @"(?!.*\17))?(?: " + $"{ObavezniArgumenti}" + @"(?!.*\18))(?: " + $"{ArgumentR}"
+            + @"(?!.*\19))?$";
 
         public static string VirtualnoVrijeme { get; } = "^VR ([1-9]|([012][0-9])|(3[01]))."
             + @"([0]{0,1}[1-9]|1[012]).\d\d\d\d. ([0-1]?[0-9]|2?[0-3]):([0-5]\d):([0-5]\d)$";

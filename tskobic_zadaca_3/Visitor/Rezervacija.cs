@@ -1,6 +1,4 @@
-﻿using tskobic_zadaca_3.Visitor;
-
-namespace tskobic_zadaca_3.Modeli
+﻿namespace tskobic_zadaca_3.Visitor
 {
     public class Rezervacija : IElement
     {

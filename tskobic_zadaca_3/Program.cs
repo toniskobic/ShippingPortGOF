@@ -4,6 +4,8 @@ using tskobic_zadaca_3.ChainOfResponsibility;
 using tskobic_zadaca_3.Composite;
 using tskobic_zadaca_3.FactoryMethod;
 using tskobic_zadaca_3.Modeli;
+using tskobic_zadaca_3.MVC;
+using tskobic_zadaca_3.Observer;
 using tskobic_zadaca_3.Singleton;
 using tskobic_zadaca_3.Static;
 using tskobic_zadaca_3.Visitor;
@@ -73,20 +75,69 @@ namespace tskobic_zadaca_3
             }
         }
 
+        private static void InicijalizacijaTerminala(List<Group> grupe)
+        {
+            BrodskaLukaSingleton bls = BrodskaLukaSingleton.Instanca();
+            Terminal terminal = bls.Terminal;
+
+            int brojRedaka = int.Parse(grupe.First(g => g.Value.StartsWith("-br")).Value[4..]);
+            terminal.BrojRedaka = brojRedaka;
+
+            string ulogeEkrana = grupe.First(g => g.Value.StartsWith("-pd")).Value[4..];
+            terminal.RadniDioPrvi = ulogeEkrana.StartsWith('R');
+
+            string omjer = grupe.First(g => g.Value.StartsWith("-vt")).Value[4..];
+            double prviDioEkrana = 0;
+            if (omjer.StartsWith('5'))
+            {
+                prviDioEkrana = 0.5;
+            }
+            else if (omjer.StartsWith('2'))
+            {
+                prviDioEkrana = 0.25;
+            }
+            else if (omjer.StartsWith('7'))
+            {
+                prviDioEkrana = 0.75;
+            }
+            if (terminal.RadniDioPrvi)
+            {
+                terminal.RadniDioPocetak = 1;
+                terminal.RadniDioKraj = (int)Math.Round(brojRedaka * prviDioEkrana) - 1;
+                terminal.Sredina = (int)Math.Round(brojRedaka * prviDioEkrana);
+                terminal.GreskePocetak = terminal.Sredina + 2;
+                terminal.GreskeKraj = brojRedaka;
+            }
+            else
+            {
+                terminal.GreskePocetak = 1;
+                terminal.GreskeKraj = (int)Math.Round(brojRedaka * prviDioEkrana) - 1;
+                terminal.Sredina = (int)Math.Round(brojRedaka * prviDioEkrana);
+                terminal.RadniDioPocetak = terminal.Sredina + 2;
+                terminal.RadniDioKraj = brojRedaka;
+            }
+        }
+
+        private static bool ProvjeraArgumentaBR(Group grupa)
+        {
+            bool provjera = int.TryParse(grupa!.Value.Split(" ")[1], out int brojRedaka);
+            return provjera && brojRedaka >= 24 && brojRedaka <= 80;
+        }
+
         private static void PrivezRezerviranogBroda(int idBrod)
         {
             BrodskaLukaSingleton bls = BrodskaLukaSingleton.Instanca();
             Brod? brod = bls.BrodskaLuka!.Brodovi.Find(x => x.ID == idBrod);
             if (brod == null)
             {
-                Console.WriteLine($"Brod s proslijeđenim ID-em {idBrod} ne postoji.");
+                bls.Controller.SetModelState($"Brod s proslijeđenim ID-em {idBrod} ne postoji.");
                 return;
             }
             List<Kanal> kanali = bls.BrodskaLuka.Kanali;
             Kanal? kanal = kanali.Find(x => x.Observers.Contains(brod));
             if (kanal == null)
             {
-                Console.WriteLine($"Brod s ID-em {idBrod} mora biti u komunikaciji "
+                bls.Controller.SetModelState($"Brod s ID-em {idBrod} mora biti u komunikaciji "
                     + $"s kapetanijom da bi zatražio privez.");
                 return;
             }
@@ -107,7 +158,7 @@ namespace tskobic_zadaca_3
                     bls.BrodskaLuka.Privezi.Add(privez);
                     bls.BrodskaLuka.Dnevnik.Add(new Zapis(VrstaZahtjeva.ZD, idBrod, false, datum, vrijemeDo));
                     ZapisiPoruku(kanal, $"Brodu s ID-em {brod.ID} odobren privez na vez {raspored.IdVez}.");
-                    Console.WriteLine("Naredba uspješna.");
+                    bls.Controller.SetModelState("Naredba uspješna.");
                     return;
                 }
                 else
@@ -123,7 +174,7 @@ namespace tskobic_zadaca_3
                         bls.BrodskaLuka.Privezi.Add(privez);
                         bls.BrodskaLuka.Dnevnik.Add(new Zapis(VrstaZahtjeva.ZD, idBrod, false, datum, vrijemeDo));
                         ZapisiPoruku(kanal, $"Brodu s ID-em {brod.ID} odobren privez na vez {rezervacija.IdVez}.");
-                        Console.WriteLine("Naredba uspješna.");
+                        bls.Controller.SetModelState("Naredba uspješna.");
                         return;
                     }
                     else
@@ -138,7 +189,7 @@ namespace tskobic_zadaca_3
             }
             bls.BrodskaLuka.Dnevnik.Add(new Zapis(VrstaZahtjeva.ZD, idBrod, true));
             ZapisiPoruku(kanal, $"{poruka}");
-            Console.WriteLine(poruka);
+            bls.Controller.SetModelState(poruka);
         }
 
         private static void PrivezSlobodnogBroda(int idBrod, int trajanje)
@@ -147,14 +198,14 @@ namespace tskobic_zadaca_3
             Brod? brod = bls.BrodskaLuka!.Brodovi.Find(x => x.ID == idBrod);
             if (brod == null)
             {
-                Console.WriteLine($"Brod s proslijeđenim ID-em {idBrod} ne postoji.");
+                bls.Controller.SetModelState($"Brod s proslijeđenim ID-em {idBrod} ne postoji.");
                 return;
             }
             List<Kanal> kanali = bls.BrodskaLuka.Kanali;
             Kanal? kanal = kanali.Find(x => x.Observers.Contains(brod));
             if (kanal == null)
             {
-                Console.WriteLine($"Brod s ID-em {idBrod} mora biti u komunikaciji "
+                bls.Controller.SetModelState($"Brod s ID-em {idBrod} mora biti u komunikaciji "
                     + $"s kapetanijom da bi zatražio privez.");
                 return;
             }
@@ -194,7 +245,7 @@ namespace tskobic_zadaca_3
                         bls.BrodskaLuka.Dnevnik.Add(new Zapis(VrstaZahtjeva.ZP, idBrod,
                             false, datum, datum.AddHours(trajanje)));
                         ZapisiPoruku(kanal, $"Brodu s ID-em {brod.ID} odobren privez na vez {vez.ID}.");
-                        Console.WriteLine("Naredba uspješna.");
+                        bls.Controller.SetModelState("Naredba uspješna.");
                         return;
                     }
                     else
@@ -213,7 +264,7 @@ namespace tskobic_zadaca_3
             }
             bls.BrodskaLuka.Dnevnik.Add(new Zapis(VrstaZahtjeva.ZP, idBrod, true));
             ZapisiPoruku(kanal, $"{poruka}");
-            Console.WriteLine(poruka);
+            bls.Controller.SetModelState(poruka);
         }
 
         private static void IspisStatusaVezova()
@@ -334,7 +385,7 @@ namespace tskobic_zadaca_3
                 SumarnoZbrajanjeVezova(zauzetiVezovi);
                 return;
             }
-            Console.WriteLine("Svi vezovi su slobodni.");
+            bls.Controller.SetModelState("Svi vezovi su slobodni.");
         }
 
         public static void SumarnoZbrajanjeVezova(List<Vez> vezovi)
@@ -407,29 +458,29 @@ namespace tskobic_zadaca_3
             Kanal? kanal = kanali.Find(x => x.Frekvencija == frekvencija);
             if (kanal == null)
             {
-                Console.WriteLine("Naredbna neuspješna, uneseni kanal ne postoji.");
+                bls.Controller.SetModelState("Naredbna neuspješna, uneseni kanal ne postoji.");
                 return;
             }
             Brod? brod = bls.BrodskaLuka.Brodovi.Find(x => x.ID == idBrod);
             if (brod == null)
             {
-                Console.WriteLine("Naredba neuspješna, brod s proslijeđenim ID-em ne postoji.");
+                bls.Controller.SetModelState("Naredba neuspješna, brod s proslijeđenim ID-em ne postoji.");
                 return;
             }
             if (!odjava)
             {
                 if (kanal.Zauzet())
                 {
-                    Console.WriteLine("Naredba neuspješna, maksimalan broj komunikacija na kanalu.");
+                    bls.Controller.SetModelState("Naredba neuspješna, maksimalan broj komunikacija na kanalu.");
                     return;
                 }
                 if (kanali.Exists(x => x.Observers.Contains(brod)))
                 {
-                    Console.WriteLine("Naredba neuspješna, brod već ima aktivnu komunikaciju");
+                    bls.Controller.SetModelState("Naredba neuspješna, brod već ima aktivnu komunikaciju");
                     return;
                 }
                 kanal.Attach(brod);
-                Console.WriteLine("Naredba uspješna");
+                bls.Controller.SetModelState("Naredba uspješna");
             }
             else if (odjava)
             {
@@ -443,11 +494,11 @@ namespace tskobic_zadaca_3
                         privez.VrijemeDo = vrijeme;
                     }
                     kanal.Detach(brod);
-                    Console.WriteLine($"Naredba uspješna, brod {idBrod} je odjavljen sa kanal {frekvencija}.");
+                    bls.Controller.SetModelState($"Naredba uspješna, brod {idBrod} je odjavljen sa kanal {frekvencija}.");
                 }
                 else
                 {
-                    Console.WriteLine($"Naredba neuspješna, ne postoji aktivna komunikacija "
+                    bls.Controller.SetModelState($"Naredba neuspješna, ne postoji aktivna komunikacija "
                         + $"na kanalu {frekvencija} za brod {idBrod}.");
                 }
             }
@@ -480,7 +531,7 @@ namespace tskobic_zadaca_3
             Brod? brod = bls.BrodskaLuka!.Brodovi.Find(x => x.ID == idBrod);
             if (brod == null)
             {
-                Console.WriteLine($"Brod s proslijeđenim ID-em {idBrod} ne postoji.");
+                bls.Controller.SetModelState($"Brod s proslijeđenim ID-em {idBrod} ne postoji.");
                 return;
             }
 
@@ -504,31 +555,62 @@ namespace tskobic_zadaca_3
         #region Main metoda
         static void Main(string[] args)
         {
+            BrodskaLukaSingleton bls = BrodskaLukaSingleton.Instanca();
+            Model model = new Model();
+            View view = new View();
+            model.Attach(view);
+            bls.Controller.AddModel(model);
+            bls.Controller.AddView(view);
+
             Regex rg = new Regex(Konstante.UlazniArgumenti);
             Match match = rg.Match(string.Join(" ", args));
-            List<Group> grupe = new List<Group>();
+            List<Group> initGrupe = new List<Group>();
+            List<Group> terminalGrupe = new List<Group>();
 
             if (match.Success)
             {
-                BrodskaLukaSingleton bls = BrodskaLukaSingleton.Instanca();
                 for (int i = 1; i < match.Groups.Count; i++)
                 {
                     if (match.Groups[i].Success)
                     {
-                        grupe.Add(match.Groups[i]);
+                        if (match.Groups[i].Value.StartsWith("-br")
+                            || match.Groups[i].Value.StartsWith("-vt")
+                            || match.Groups[i].Value.StartsWith("-pd"))
+                        {
+                            terminalGrupe.Add(match.Groups[i]);
+                        }
+                        initGrupe.Add(match.Groups[i]);
                     }
                 }
+                if (!ProvjeraArgumentaBR(terminalGrupe.Find(x => x.Value.StartsWith("-br"))!))
+                {
+                    Ispis.GreskaArgumenti();
+                    return;
+                }
+                InicijalizacijaTerminala(terminalGrupe);
+                Terminal terminal = bls.Terminal;
+                bls.Controller.SetModelState(Konstante.UNICODE_ESC + "2J");
 
-                if (!Inicijalizacija(grupe))
+                bls.Controller.SetModelState(Konstante.UNICODE_ESC + $"1d");
+                bls.Controller.SetModelState(Konstante.UNICODE_ESC + $"{terminal.Sredina}d");
+                for (int i = 0; i < 80; i++)
+                {
+                    bls.Controller.SetModelState("=");
+                }
+                bls.Controller.SetModelState(Konstante.UNICODE_ESC + $"{terminal.GreskePocetak};{terminal.GreskeKraj}r");
+                bls.Controller.SetModelState(Konstante.UNICODE_ESC + $"{terminal.GreskePocetak}d");
+                if (!Inicijalizacija(initGrupe))
                 {
                     Ispis.GreskaInicijalizacije();
                     return;
                 }
                 bls.VirtualniSatOriginator.StvarnoVrijeme = DateTime.Now;
 
+                bls.Controller.SetModelState(Konstante.UNICODE_ESC + $"{terminal.RadniDioPocetak};{terminal.RadniDioKraj}r");
+                bls.Controller.SetModelState(Konstante.UNICODE_ESC + $"{terminal.RadniDioPocetak}d");
                 while (!KrajPrograma)
                 {
-                    Console.WriteLine("\nUnesite komandu:");
+                    bls.Controller.SetModelState("Unesite komandu:");
                     switch (Console.ReadLine())
                     {
                         case "I":
@@ -634,17 +716,17 @@ namespace tskobic_zadaca_3
                                 string naziv = ulaz.Substring(4).Trim('"');
                                 if (bls.CareTaker.Get(naziv) != null)
                                 {
-                                    Console.WriteLine("Naredba neuspješna, " +
+                                    bls.Controller.SetModelState("Naredba neuspješna, " +
                                         "već postoji prethodno spremljeno stanje s tim nazivom!");
                                 }
                                 else
                                 {
                                     bls.CareTaker.Add(bls.VirtualniSatOriginator.SaveStateToMemento(naziv));
-                                    Console.WriteLine("Naredba uspješna");
+                                    bls.Controller.SetModelState("Naredba uspješna");
                                 }
                                 break;
                             }
-                        case string ulaz when new Regex(Konstante.VracanjeStanjaVezova  ).IsMatch(ulaz):
+                        case string ulaz when new Regex(Konstante.VracanjeStanjaVezova).IsMatch(ulaz):
                             {
                                 bls.VirtualniSatOriginator.IzvrsiVirtualniPomak();
                                 Ispis.VirtualniSat();
@@ -652,14 +734,14 @@ namespace tskobic_zadaca_3
                                 Memento.Memento? memento = bls.CareTaker.Get(naziv);
                                 if (memento == null)
                                 {
-                                    Console.WriteLine("Naredba neuspješna, " +
+                                    bls.Controller.SetModelState("Naredba neuspješna, " +
                                         "ne postoji prethodno spremljeno stanje s tim nazivom!");
                                 }
                                 else
                                 {
                                     bls.VirtualniSatOriginator.StvarnoVrijeme = DateTime.Now;
                                     bls.VirtualniSatOriginator.VirtualnoVrijeme = memento.VirtualnoVrijeme;
-                                    Console.WriteLine("Naredba uspješna");
+                                    bls.Controller.SetModelState("Naredba uspješna");
                                     Ispis.VirtualniSat();
                                 }
                                 break;
@@ -685,6 +767,7 @@ namespace tskobic_zadaca_3
             {
                 Ispis.GreskaArgumenti();
             }
+            bls.Controller.SetModelState(Konstante.UNICODE_ESC + "37m");
         }
         #endregion
     }
