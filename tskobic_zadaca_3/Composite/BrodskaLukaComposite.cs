@@ -94,7 +94,7 @@ namespace tskobic_zadaca_3.Composite
 
         public List<IComponent> Find(Func<IComponent, bool> predicate)
         {
-            ComponentIterator iterator = (ComponentIterator)CreateIterator();
+            IIterator iterator = CreateIterator();
             List<IComponent> list = new List<IComponent>();
             while (iterator.HasNext())
             {
