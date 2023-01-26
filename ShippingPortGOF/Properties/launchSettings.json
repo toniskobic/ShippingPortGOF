@@ -1,0 +1,7 @@
+{
+  "profiles": {
+    "ShippingPortGOF": {
+      "commandName": "Project",
+      "commandLineArgs": "-l SP_port.csv -b SP_ship.csv -r SP_schedule.csv -v SP_mooring.csv -m SP_pier.csv -mv SP_pier_mooring.csv -k SP_channel.csv -br 40 -vt 50:50 -pd R:P"
+    }
+}
