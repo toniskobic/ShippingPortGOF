@@ -13,7 +13,7 @@ namespace ShippingPortGOF
 {
     public class Program
     {
-        private static bool KrajPrograma { get; set; } = false;
+        private static bool Terminated { get; set; } = false;
 
         #region Methods
         private static bool Initialization(List<Group> groups)
@@ -607,7 +607,7 @@ namespace ShippingPortGOF
 
                 sps.Controller.SetModelState(Constants.UNICODE_ESC + $"{terminal.OperatingWindowStartPosition};{terminal.OperatingWindowEndPosition}r");
                 sps.Controller.SetModelState(Constants.UNICODE_ESC + $"{terminal.OperatingWindowStartPosition}d");
-                while (!KrajPrograma)
+                while (!Terminated)
                 {
                     sps.Controller.SetModelState("Insert command (I, VR, UR, ZD, ZP, ZA, F, T, B, SPS, VPS):");
                     switch (Console.ReadLine())
@@ -747,7 +747,7 @@ namespace ShippingPortGOF
                             {
                                 sps.VirtualTimeOriginator.ShiftVirtualTime();
                                 Print.VirtualTime();
-                                KrajPrograma = true;
+                                Terminated = true;
                                 break;
                             }
                         default:
