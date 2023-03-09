@@ -1,7 +1,5 @@
-﻿using ShippingPortGOF.Models;
-using ShippingPortGOF.Observer;
+﻿using ShippingPortGOF.Observer;
 using ShippingPortGOF.Singleton;
-using ShippingPortGOF.Static;
 
 namespace ShippingPortGOF.MVC
 {
