@@ -74,55 +74,6 @@ namespace ShippingPortGOF
             }
         }
 
-        private static void TerminalInitialization(List<Group> groups)
-        {
-            ShippingPortSingleton sps = ShippingPortSingleton.GetInstance();
-            Terminal terminal = sps.Terminal;
-
-            int numberOfRows = int.Parse(groups.First(g => g.Value.StartsWith("-br")).Value[4..]);
-            terminal.RowsNumber = numberOfRows;
-
-            string windowRoles = groups.First(g => g.Value.StartsWith("-pd")).Value[4..];
-            terminal.OperatingWindowFirst = windowRoles.StartsWith('R');
-
-            string ratio = groups.First(g => g.Value.StartsWith("-vt")).Value[4..];
-            double firstWindow = 0;
-            if (ratio.StartsWith('5'))
-            {
-                firstWindow = 0.5;
-            }
-            else if (ratio.StartsWith('2'))
-            {
-                firstWindow = 0.25;
-            }
-            else if (ratio.StartsWith('7'))
-            {
-                firstWindow = 0.75;
-            }
-            if (terminal.OperatingWindowFirst)
-            {
-                terminal.OperatingWindowStartPosition = 1;
-                terminal.OperatingWindowEndPosition = (int)Math.Round(numberOfRows * firstWindow) - 1;
-                terminal.MiddlePosition = (int)Math.Round(numberOfRows * firstWindow);
-                terminal.ErrorsWindowStartPosition = terminal.MiddlePosition + 2;
-                terminal.ErrorsWindowEndingPosition = numberOfRows;
-            }
-            else
-            {
-                terminal.ErrorsWindowStartPosition = 1;
-                terminal.ErrorsWindowEndingPosition = (int)Math.Round(numberOfRows * firstWindow) - 1;
-                terminal.MiddlePosition = (int)Math.Round(numberOfRows * firstWindow);
-                terminal.OperatingWindowStartPosition = terminal.MiddlePosition + 2;
-                terminal.OperatingWindowEndPosition = numberOfRows;
-            }
-        }
-
-        private static bool CheckArgumentBR(Group group)
-        {
-            bool check = int.TryParse(group!.Value.Split(" ")[1], out int numberOfRows);
-            return check && numberOfRows >= 24 && numberOfRows <= 80;
-        }
-
         private static void MoorReservedShip(int idShip)
         {
             ShippingPortSingleton sps = ShippingPortSingleton.GetInstance();
@@ -344,8 +295,8 @@ namespace ShippingPortGOF
         {
             ShippingPortSingleton sps = ShippingPortSingleton.GetInstance();
 
-            Utils.CheckDateParse(dateFrom, out DateTime intervalOd);
-            Utils.CheckDateParse(dateTo, out DateTime intervalDo);
+            Utils.CheckDateParse(dateFrom, out DateTime intervalFrom);
+            Utils.CheckDateParse(dateTo, out DateTime intervalTo);
         }
 
         private static void PrintTakenMoorings(string input)
@@ -563,8 +514,7 @@ namespace ShippingPortGOF
 
             Regex rg = new Regex(Constants.InputArguments);
             Match match = rg.Match(string.Join(" ", args));
-            List<Group> initializationGroups = new List<Group>();
-            List<Group> terminalGroups = new List<Group>();
+            List<Group> groups = new List<Group>();
 
             if (match.Success)
             {
@@ -572,41 +522,16 @@ namespace ShippingPortGOF
                 {
                     if (match.Groups[i].Success)
                     {
-                        if (match.Groups[i].Value.StartsWith("-br")
-                            || match.Groups[i].Value.StartsWith("-vt")
-                            || match.Groups[i].Value.StartsWith("-pd"))
-                        {
-                            terminalGroups.Add(match.Groups[i]);
-                        }
-                        initializationGroups.Add(match.Groups[i]);
+                        groups.Add(match.Groups[i]);
                     }
                 }
-                if (!CheckArgumentBR(terminalGroups.Find(x => x.Value.StartsWith("-br"))!))
-                {
-                    Print.ErrorArguments();
-                    return;
-                }
-                TerminalInitialization(terminalGroups);
-                Terminal terminal = sps.Terminal;
-                sps.Controller.SetModelState(Constants.UNICODE_ESC + "2J");
-
-                sps.Controller.SetModelState(Constants.UNICODE_ESC + $"1d");
-                sps.Controller.SetModelState(Constants.UNICODE_ESC + $"{terminal.MiddlePosition}d");
-                for (int i = 0; i < 80; i++)
-                {
-                    sps.Controller.SetModelState("=");
-                }
-                sps.Controller.SetModelState(Constants.UNICODE_ESC + $"{terminal.ErrorsWindowStartPosition};{terminal.ErrorsWindowEndingPosition}r");
-                sps.Controller.SetModelState(Constants.UNICODE_ESC + $"{terminal.ErrorsWindowStartPosition}d");
-                if (!Initialization(initializationGroups))
+                if (!Initialization(groups))
                 {
                     Print.ErrorInitialization();
                     return;
                 }
                 sps.VirtualTimeOriginator.RealTime = DateTime.Now;
 
-                sps.Controller.SetModelState(Constants.UNICODE_ESC + $"{terminal.OperatingWindowStartPosition};{terminal.OperatingWindowEndPosition}r");
-                sps.Controller.SetModelState(Constants.UNICODE_ESC + $"{terminal.OperatingWindowStartPosition}d");
                 while (!Terminated)
                 {
                     sps.Controller.SetModelState("Insert command (I, VR, UR, ZD, ZP, ZA, F, T, B, SPS, VPS):");
@@ -764,7 +689,6 @@ namespace ShippingPortGOF
             {
                 Print.ErrorArguments();
             }
-            sps.Controller.SetModelState(Constants.UNICODE_ESC + "37m");
         }
         #endregion
     }

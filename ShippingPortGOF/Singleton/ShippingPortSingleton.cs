@@ -13,8 +13,6 @@ namespace ShippingPortGOF.Singleton
 
         public VirtualTimeOriginator VirtualTimeOriginator { get; set; }
 
-        public Terminal Terminal { get; set; }
-
         public Controller Controller { get; set; }
 
         public CareTaker CareTaker { get; set; }
@@ -30,7 +28,6 @@ namespace ShippingPortGOF.Singleton
         private ShippingPortSingleton()
         {
             VirtualTimeOriginator = new VirtualTimeOriginator();
-            Terminal = new Terminal();
             Controller = new Controller();
             CareTaker = new CareTaker();
             ErrorCount = 0;
