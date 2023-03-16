@@ -2,8 +2,6 @@
 {
     public static class Constants
     {
-        public static string UNICODE_ESC { get; } = "\u001b[";
-
         public static string[] MooringTypes { get; } = { "PU", "PO", "OS" };
 
         public static string[] ShipTypes { get; } = { "TR", "KA", "KL", "KR", "RI", "TE", "JA", "BR", "RO" };
@@ -14,23 +12,13 @@
 
         public static string[] OtherShips { get; } = { "JA", "BR", "RO" };
 
-        private static string ArgumentR { get; } = @"(-r [a-zA-Z_0-9.]+\.csv)";
-
-        private static string MandatoryArguments { get; } = @"(-(?:(?:(?:br) \d{2})|(?:(?:vt) "
-        + @"(?:(?:50:50)|(?:25:75)|(?:75:25)){1})|(?:(?:pd) (?:(?:R:P)|(?:P:R)){1})|(?:(?:(?:mv)"
-        + @"|[lvbmk]){1} [a-zA-Z_0-9.]+\.csv)){1})";
-
-        public static string InputArguments { get; } = @"^(?:" + $"{ArgumentR}"
-            + @"(?!.*\1) )?" + $"{MandatoryArguments}" + @"(?!.*\2)(?: " + $"{ArgumentR}"
-            + @"(?!.*\3))?(?: " + $"{MandatoryArguments}" + @"(?!.*\4))(?: " + $"{ArgumentR}"
-            + @"(?!.*\5))?(?: " + $"{MandatoryArguments}" + @"(?!.*\6))(?: " + $"{ArgumentR}"
-            + @"(?!.*\7))?(?: " + $"{MandatoryArguments}" + @"(?!.*\8))(?: " + $"{ArgumentR}"
-            + @"(?!.*\9))?(?: " + $"{MandatoryArguments}" + @"(?!.*\10))(?: " + $"{ArgumentR}"
-            + @"(?!.*\11))?(?: " + $"{MandatoryArguments}" + @"(?!.*\12))(?: " + $"{ArgumentR}"
-            + @"(?!.*\13))?(?: " + $"{MandatoryArguments}" + @"(?!.*\14))(?: " + $"{ArgumentR}"
-            + @"(?!.*\15))?(?: " + $"{MandatoryArguments}" + @"(?!.*\16))(?: " + $"{ArgumentR}"
-            + @"(?!.*\17))?(?: " + $"{MandatoryArguments}" + @"(?!.*\18))(?: " + $"{ArgumentR}"
-            + @"(?!.*\19))?$";
+        public static string InputArguments { get; } = @"^(?:(-r [a-zA-Z_0-9.]+\.csv)(?!.*\1) )?"
+          + @"(-(?:(?:mv)|[lvbmk]){1} [a-zA-Z_0-9.]+\.csv)(?!.*\2)(?: (-r [a-zA-Z_0-9.]+\.csv)(?!.*\3))?"
+          + @"(?: (-(?:(?:mv)|[lvbmk]){1} [a-zA-Z_0-9.]+\.csv)(?!.*\4))(?: (-r [a-zA-Z_0-9.]+\.csv)(?!.*\5))?"
+          + @"(?: (-(?:(?:mv)|[lvbmk]){1} [a-zA-Z_0-9.]+\.csv)(?!.*\6))(?: (-r [a-zA-Z_0-9.]+\.csv)(?!.*\7))?"
+          + @"(?: (-(?:(?:mv)|[lvbmk]){1} [a-zA-Z_0-9.]+\.csv)(?!.*\8))(?: (-r [a-zA-Z_0-9.]+\.csv)(?!.*\9))?"
+          + @"(?: (-(?:(?:mv)|[lvbmk]){1} [a-zA-Z_0-9.]+\.csv)(?!.*\10))(?: (-r [a-zA-Z_0-9.]+\.csv)(?!.*\11))?"
+          + @"(?: (-(?:(?:mv)|[lvbmk]){1} [a-zA-Z_0-9.]+\.csv)(?!.*\12))(?: (-r [a-zA-Z_0-9.]+\.csv)(?!.*\13))?$";
 
         public static string VirtualTime { get; } = "^VR ([1-9]|([012][0-9])|(3[01]))."
             + @"([0]{0,1}[1-9]|1[012]).\d\d\d\d. ([0-1]?[0-9]|2?[0-3]):([0-5]\d):([0-5]\d)$";
