@@ -109,6 +109,11 @@ namespace ShippingPortGOF.Static
             sps.Controller.SetModelState("ERROR: Invalid command!");
         }
 
+        public static void Manual()
+        {
+
+        }
+
         public static void Mooring(int id, string label, string type, string status)
         {
             ShippingPortSingleton sps = ShippingPortSingleton.GetInstance();

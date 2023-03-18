@@ -19,27 +19,27 @@ namespace ShippingPortGOF
         private static bool Initialization(List<Group> groups)
         {
             ShippingPortSingleton sps = ShippingPortSingleton.GetInstance();
-            LoadData(new ShippingPortCreator(), groups, "-l");
+            LoadData(new ShippingPortCreator(), groups, "-p");
             if (sps.ShippingPort == null)
             {
                 return false;
             }
 
-            LoadData(new PiersCreator(), groups, "-m");
+            LoadData(new PiersCreator(), groups, "-d");
             List<IComponent> piers = sps.ShippingPort!.Find(c => c is Pier).ToList();
             if (piers.Count == 0)
             {
                 return false;
             }
 
-            LoadData(new MooringsCreator(), groups, "-v");
+            LoadData(new MooringsCreator(), groups, "-m");
             List<IComponent> moorings = sps.ShippingPort!.Find(c => c is Mooring);
             if (moorings.Count == 0)
             {
                 return false;
             }
 
-            LoadData(new MooringsPiersCreator(), groups, "-mv");
+            LoadData(new MooringsPiersCreator(), groups, "-dm");
             moorings = sps.ShippingPort!.Find(c => c is Mooring);
             if (!moorings.Exists(v => ((Mooring)v).IdPier != null))
             {
@@ -48,7 +48,7 @@ namespace ShippingPortGOF
             sps.ShippingPort.RemoveAll(c => c is Mooring mooring && mooring.IdPier == null);
             moorings = sps.ShippingPort!.Find(c => c is Mooring);
 
-            LoadData(new ChannelsCreator(), groups, "-k");
+            LoadData(new ChannelsCreator(), groups, "-c");
             if (sps.ShippingPort.Channels.Count == 0)
             {
                 return false;
@@ -60,7 +60,7 @@ namespace ShippingPortGOF
                 return false;
             }
 
-            LoadData(new SchedulesCreator(), groups, "-r");
+            LoadData(new SchedulesCreator(), groups, "-s");
             return true;
         }
 
@@ -276,7 +276,7 @@ namespace ShippingPortGOF
         {
             List<string> options = input.Split(" ").ToList();
             ShippingPortSingleton sps = ShippingPortSingleton.GetInstance();
-            if (options.Count == 1)
+            if (options.Count == 2)
             {
                 sps.HeaderPrint = false;
                 sps.FooterPrint = false;
@@ -284,9 +284,9 @@ namespace ShippingPortGOF
             }
             else
             {
-                sps.HeaderPrint = options.Contains("Z");
-                sps.FooterPrint = options.Contains("P");
-                sps.SequenceNumberPrint = options.Contains("RB");
+                sps.HeaderPrint = options.Contains("H");
+                sps.FooterPrint = options.Contains("F");
+                sps.SequenceNumberPrint = options.Contains("SN");
             }
         }
 
@@ -534,10 +534,12 @@ namespace ShippingPortGOF
 
                 while (!Terminated)
                 {
-                    sps.Controller.SetModelState("Insert command (I, VR, UR, ZD, ZP, ZA, F, T, B, SPS, VPS):");
+                    sps.Controller.SetModelState("Insert command (STATUS, VIRTUAL TIME, " +
+                        "LOAD RESERVATIONS, RESERVED MOORING, NON RESERVED MOORING, TAKEN MOORINGS, " +
+                        "CHANNEL, PRINT SETTINGS, SHIP, BACKUP, RESTORE, MANUAL):");
                     switch (Console.ReadLine())
                     {
-                        case "I":
+                        case "STATUS":
                             {
                                 sps.VirtualTimeOriginator.ShiftVirtualTime();
                                 Print.VirtualTime();
@@ -558,7 +560,7 @@ namespace ShippingPortGOF
                         case string input when new Regex(Constants.VirtualTime).IsMatch(input):
                             {
                                 sps.VirtualTimeOriginator.RealTime = DateTime.Now;
-                                sps.VirtualTimeOriginator.VirtualTime = DateTime.Parse(input.Substring(3));
+                                sps.VirtualTimeOriginator.VirtualTime = DateTime.Parse(input.Substring(13));
                                 Print.VirtualTime();
                                 break;
                             }
@@ -567,14 +569,14 @@ namespace ShippingPortGOF
                                 Creator creator = new ReservationsCreator();
                                 sps.VirtualTimeOriginator.ShiftVirtualTime();
                                 Print.VirtualTime();
-                                creator.ReadData(input.Substring(3));
+                                creator.ReadData(input.Substring(18));
                                 break;
                             }
                         case string input when new Regex(Constants.MooringReservationRequest).IsMatch(input):
                             {
                                 sps.VirtualTimeOriginator.ShiftVirtualTime();
                                 Print.VirtualTime();
-                                int idShip = int.Parse(input.Substring(3));
+                                int idShip = int.Parse(input.Substring(17));
                                 WriteMessage(idShip, input);
                                 MoorReservedShip(idShip);
                                 break;
@@ -584,8 +586,8 @@ namespace ShippingPortGOF
                                 sps.VirtualTimeOriginator.ShiftVirtualTime();
                                 Print.VirtualTime();
                                 string[] data = input.Split(" ");
-                                int idShip = int.Parse(data[1]);
-                                int duration = int.Parse(data[2]);
+                                int idShip = int.Parse(data[3]);
+                                int duration = int.Parse(data[4]);
                                 WriteMessage(idShip, input);
                                 MoorNotReservedShip(idShip, duration);
                                 break;
@@ -673,6 +675,12 @@ namespace ShippingPortGOF
                                 sps.VirtualTimeOriginator.ShiftVirtualTime();
                                 Print.VirtualTime();
                                 Terminated = true;
+                                break;
+                            }
+                        case "MANUAL":
+                            {
+                                sps.VirtualTimeOriginator.ShiftVirtualTime();
+                                Print.VirtualTime();
                                 break;
                             }
                         default:
