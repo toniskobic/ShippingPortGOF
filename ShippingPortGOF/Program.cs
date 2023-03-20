@@ -272,6 +272,23 @@ namespace ShippingPortGOF
             }
         }
 
+        private static void PrintMooringsOfType(List<MooringTaken> moorings, string type, string status)
+        {
+            ShippingPortSingleton sps = ShippingPortSingleton.GetInstance();
+
+            for (int i = 0; i < moorings.Count; i++)
+            {
+                if (sps.SequenceNumberPrint)
+                {
+                    Print.MooringOfType(i + 1, moorings[i].ID, type, status, $"{moorings[i].TakenFrom} - {moorings[i].TakenUntil}");
+                }
+                else
+                {
+                    Print.MooringOfType(moorings[i].ID, type, status, $"{moorings[i].TakenFrom} - {moorings[i].TakenUntil}");
+                }
+            }
+        }
+
         private static void PrintFormat(string input)
         {
             List<string> options = input.Split(" ").ToList();
@@ -290,13 +307,136 @@ namespace ShippingPortGOF
             }
         }
 
-        //TODO "V" command implementation
-        private static void PrintMooringsOfType(string type, string status, string dateFrom, string dateTo)
+        private static List<MooringTaken> CalculateTakenMoorings(string type, DateTime dateFrom, DateTime dateTo)
         {
             ShippingPortSingleton sps = ShippingPortSingleton.GetInstance();
 
-            Utils.CheckDateParse(dateFrom, out DateTime intervalFrom);
-            Utils.CheckDateParse(dateTo, out DateTime intervalTo);
+            List<Mooring> moorings = sps.ShippingPort!.Find(c => c is Mooring mooring && mooring.Type == type)
+                .Cast<Mooring>().ToList();
+
+            List<MooringTaken> takenMoorings = new List<MooringTaken>();
+
+            foreach (var m in moorings!)
+            {
+                MooredShip? mooredShip = sps.ShippingPort.MooredShips.Find(ms => ms.IdMooring == m.ID
+                && ms.DateFrom <= dateTo && dateFrom <= ms.DateTo);
+                if (mooredShip != null)
+                {
+                    takenMoorings.Add(new MooringTaken(m.ID, mooredShip.DateFrom, mooredShip.DateTo));
+                }
+            };
+
+            foreach (var m in moorings)
+            {
+                for (var day = dateFrom.Date; day.Date <= dateTo.Date; day = day.AddDays(1))
+                {
+                    var timeFrom = TimeOnly.MinValue;
+                    var timeTo = TimeOnly.MaxValue;
+                    if (day.Date == dateFrom.Date)
+                    {
+                        timeFrom = TimeOnly.FromDateTime(dateFrom);
+                    }
+                    if (day.Date == dateTo.Date)
+                    {
+                        timeTo = TimeOnly.FromDateTime(dateTo);
+                    }
+                    Schedule? schedule = sps.ShippingPort.Schedules.Find(s => s.IdMooring == m.ID
+                        && s.DaysOfWeek.Contains(day.DayOfWeek) && s.TimeFrom <= timeTo && timeFrom <= s.TimeTo);
+                    if (schedule != null)
+                    {
+                        var date = DateOnly.FromDateTime(day);
+                        takenMoorings.Add(new MooringTaken(m.ID, date.ToDateTime(schedule.TimeFrom), date.ToDateTime(schedule.TimeTo)));
+                    }
+                }
+            }
+
+            foreach (var m in moorings)
+            {
+                Reservation? reservation = sps.ShippingPort.Reservations.Find(r => r.IdMooring == m.ID
+                && r.DateFrom <= dateTo && dateFrom <= r.DateFrom.AddHours(r.HoursDuration));
+                if (reservation != null)
+                {
+                    takenMoorings.Add(new MooringTaken(m.ID, reservation.DateFrom, reservation.DateFrom.AddHours(reservation.HoursDuration)));
+                }
+            }
+
+            return takenMoorings;
+        }
+
+        private static List<MooringTaken> CalculateAvailableMoorings(string type, DateTime dateFrom, DateTime dateTo)
+        {
+            ShippingPortSingleton sps = ShippingPortSingleton.GetInstance();
+
+            List<Mooring> moorings = sps.ShippingPort!.Find(c => c is Mooring mooring && mooring.Type == type)
+                .Cast<Mooring>().ToList();
+            List<MooringTaken> takenMoorings = CalculateTakenMoorings(type, dateFrom, dateTo);
+            List<MooringTaken> availableMoorings = new List<MooringTaken>();
+            takenMoorings.Sort((x, y) => x.TakenFrom.CompareTo(y.TakenFrom));
+
+            foreach (var mooring in moorings)
+            {
+                DateTime startDate = dateFrom;
+                DateTime endDate = dateTo;
+                var currentTakenMoorings = takenMoorings.Where(tm => tm.ID == mooring.ID).ToList();
+                if (currentTakenMoorings.Count == 0)
+                {
+                    availableMoorings.Add(new MooringTaken(mooring.ID, dateFrom, dateTo));
+                }
+                foreach (var m in currentTakenMoorings)
+                {
+                    if (startDate >= m.TakenFrom) startDate = m.TakenUntil;
+                    else
+                    {
+                        endDate = m.TakenFrom;
+                        availableMoorings.Add(new MooringTaken(m.ID, startDate, endDate));
+                        startDate = m.TakenUntil;
+                        if (currentTakenMoorings.Last() == m)
+                        {
+                            availableMoorings.Add(new MooringTaken(m.ID, startDate, dateTo));
+                        }
+                    }
+                }
+            }
+
+            return availableMoorings;
+        }
+
+        private static void PrintMooringsStatusOfType(string type, string status, string dateFromInput, string dateToInput)
+        {
+            ShippingPortSingleton sps = ShippingPortSingleton.GetInstance();
+            Utils.CheckDateParse(dateFromInput, out DateTime dateFrom);
+            Utils.CheckDateParse(dateToInput, out DateTime dateTo);
+
+            List<MooringTaken> moorings = new List<MooringTaken>();
+            string mooringsStatus = string.Empty;
+            if (status == "T")
+            {
+                mooringsStatus = "Taken";
+                moorings = CalculateTakenMoorings(type, dateFrom, dateTo);
+            }
+            else if (status == "A")
+            {
+                mooringsStatus = "Available";
+                moorings = CalculateAvailableMoorings(type, dateFrom, dateTo);
+            }
+
+            moorings.Sort((x, y) =>
+            {
+                var ret = x.ID.CompareTo(y.ID);
+                if (ret == 0) ret = x.TakenFrom.CompareTo(y.TakenFrom);
+                return ret;
+            });
+
+            if (sps.HeaderPrint)
+            {
+                Print.MooringHeader();
+            }
+            PrintMooringsOfType(moorings, type, mooringsStatus);
+            if (sps.FooterPrint)
+            {
+                int rowsCount = moorings.Count;
+                Print.Footer(rowsCount);
+            }
         }
 
         private static void PrintTakenMoorings(string input)
@@ -553,7 +693,12 @@ namespace ShippingPortGOF
                                 string[] data = input.Split(" ");
                                 if (Constants.MooringTypes.Contains(data[1]))
                                 {
-                                    //TODO "V" command
+                                    PrintMooringsStatusOfType(data[1], data[2], $"{data[3]} {data[4]}", $"{data[5]} {data[6]}");
+                                }
+                                else
+                                {
+                                    sps.Controller.SetModelState("Command unsuccessful, " +
+                                        "entered mooring type does not exist!");
                                 }
                                 break;
                             }

@@ -127,6 +127,19 @@ namespace ShippingPortGOF.Static
                 sequenceNumber, id, label, type, status));
         }
 
+        public static void MooringOfType(int id, string type, string status, string time)
+        {
+            ShippingPortSingleton sps = ShippingPortSingleton.GetInstance();
+            sps.Controller.SetModelState(string.Format("|{0,10}|{1,-10}|{2,-10}|{3,-10}|", id, type, status, time));
+        }
+
+        public static void MooringOfType(int sequenceNumber, int id, string type, string status, string time)
+        {
+            ShippingPortSingleton sps = ShippingPortSingleton.GetInstance();
+            sps.Controller.SetModelState(string.Format("|{0,10}|{1,10}|{2,-10}|{3,-10}|{4,-10}|",
+                sequenceNumber, id, type, status, time));
+        }
+
         public static void MooringHeader()
         {
             ShippingPortSingleton sps = ShippingPortSingleton.GetInstance();
