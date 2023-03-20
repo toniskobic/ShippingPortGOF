@@ -94,7 +94,7 @@ namespace ShippingPortGOF.Static
         public static void VirtualTime()
         {
             ShippingPortSingleton sps = ShippingPortSingleton.GetInstance();
-            sps.Controller.SetModelState($"Virtual time: {sps.VirtualTimeOriginator.VirtualTime:dd.MM.yyyy. HH:mm:ss}");
+            sps.Controller.SetModelState($"Virtual time: {sps.VirtualTimeOriginator.VirtualTime.Format()}");
         }
 
         public static void ErrorArguments()

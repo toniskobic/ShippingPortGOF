@@ -194,7 +194,7 @@ namespace ShippingPortGOF
                         sps.ShippingPort.MooredShips.Add(mooredShip);
                         sps.ShippingPort.RecordLog.Add(new Record(RequestType.ZP, idShip,
                             false, date, date.AddHours(duration)));
-                        WriteMessage(channel, $"Ship with the ID {ship.ID} is approved for tieng down on mooring {mooring.ID}.");
+                        WriteMessage(channel, $"Ship with the ID {ship.ID} is approved for tieing down on mooring {mooring.ID}.");
                         sps.Controller.SetModelState("Command successful.");
                         return;
                     }
@@ -280,11 +280,11 @@ namespace ShippingPortGOF
             {
                 if (sps.SequenceNumberPrint)
                 {
-                    Print.MooringOfType(i + 1, moorings[i].ID, type, status, $"{moorings[i].TakenFrom} - {moorings[i].TakenUntil}");
+                    Print.MooringOfType(i + 1, moorings[i].ID, type, status, $"{moorings[i].TakenFrom.Format()} - {moorings[i].TakenUntil.Format()}");
                 }
                 else
                 {
-                    Print.MooringOfType(moorings[i].ID, type, status, $"{moorings[i].TakenFrom} - {moorings[i].TakenUntil}");
+                    Print.MooringOfType(moorings[i].ID, type, status, $"{moorings[i].TakenFrom.Format()} - {moorings[i].TakenUntil.Format()}");
                 }
             }
         }
@@ -316,47 +316,48 @@ namespace ShippingPortGOF
 
             List<MooringTaken> takenMoorings = new List<MooringTaken>();
 
-            foreach (var m in moorings!)
-            {
-                MooredShip? mooredShip = sps.ShippingPort.MooredShips.Find(ms => ms.IdMooring == m.ID
-                && ms.DateFrom <= dateTo && dateFrom <= ms.DateTo);
-                if (mooredShip != null)
-                {
-                    takenMoorings.Add(new MooringTaken(m.ID, mooredShip.DateFrom, mooredShip.DateTo));
-                }
-            };
-
             foreach (var m in moorings)
             {
-                for (var day = dateFrom.Date; day.Date <= dateTo.Date; day = day.AddDays(1))
+                List<MooredShip> mooredShips = sps.ShippingPort.MooredShips.Where(ms => ms.IdMooring == m.ID).ToList();
+                foreach (var ms in mooredShips)
                 {
-                    var timeFrom = TimeOnly.MinValue;
-                    var timeTo = TimeOnly.MaxValue;
-                    if (day.Date == dateFrom.Date)
+                    if (ms.DateFrom <= dateTo && dateFrom <= ms.DateTo)
                     {
-                        timeFrom = TimeOnly.FromDateTime(dateFrom);
-                    }
-                    if (day.Date == dateTo.Date)
-                    {
-                        timeTo = TimeOnly.FromDateTime(dateTo);
-                    }
-                    Schedule? schedule = sps.ShippingPort.Schedules.Find(s => s.IdMooring == m.ID
-                        && s.DaysOfWeek.Contains(day.DayOfWeek) && s.TimeFrom <= timeTo && timeFrom <= s.TimeTo);
-                    if (schedule != null)
-                    {
-                        var date = DateOnly.FromDateTime(day);
-                        takenMoorings.Add(new MooringTaken(m.ID, date.ToDateTime(schedule.TimeFrom), date.ToDateTime(schedule.TimeTo)));
+                        takenMoorings.Add(new MooringTaken(m.ID, ms.DateFrom, ms.DateTo));
                     }
                 }
-            }
 
-            foreach (var m in moorings)
-            {
-                Reservation? reservation = sps.ShippingPort.Reservations.Find(r => r.IdMooring == m.ID
-                && r.DateFrom <= dateTo && dateFrom <= r.DateFrom.AddHours(r.HoursDuration));
-                if (reservation != null)
+                List<Schedule> schedules = sps.ShippingPort.Schedules.Where(s => s.IdMooring == m.ID).ToList();
+                foreach (var schedule in schedules)
                 {
-                    takenMoorings.Add(new MooringTaken(m.ID, reservation.DateFrom, reservation.DateFrom.AddHours(reservation.HoursDuration)));
+                    for (var day = dateFrom.Date; day.Date <= dateTo.Date; day = day.AddDays(1))
+                    {
+                        var timeFrom = TimeOnly.MinValue;
+                        var timeTo = TimeOnly.MaxValue;
+                        if (day.Date == dateFrom.Date)
+                        {
+                            timeFrom = TimeOnly.FromDateTime(dateFrom);
+                        }
+                        if (day.Date == dateTo.Date)
+                        {
+                            timeTo = TimeOnly.FromDateTime(dateTo);
+                        }
+                        if (schedule!.DaysOfWeek.Contains(day.DayOfWeek)
+                            && schedule.TimeFrom <= timeTo && timeFrom <= schedule.TimeTo)
+                        {
+                            var date = DateOnly.FromDateTime(day);
+                            takenMoorings.Add(new MooringTaken(m.ID, date.ToDateTime(schedule.TimeFrom), date.ToDateTime(schedule.TimeTo)));
+                        }
+                    }
+                }
+
+                List<Reservation> reservations = sps.ShippingPort.Reservations.Where(r => r.IdMooring == m.ID).ToList();
+                foreach (var r in reservations)
+                {
+                    if (r.DateFrom <= dateTo && dateFrom <= r.DateFrom.AddHours(r.HoursDuration))
+                    {
+                        takenMoorings.Add(new MooringTaken(m.ID, r.DateFrom, r.DateFrom.AddHours(r.HoursDuration)));
+                    }
                 }
             }
 
@@ -815,17 +816,18 @@ namespace ShippingPortGOF
                                 }
                                 break;
                             }
+                        case "MANUAL":
+                            {
+                                sps.VirtualTimeOriginator.ShiftVirtualTime();
+                                Print.VirtualTime();
+                                Print.Manual();
+                                break;
+                            }
                         case "Q":
                             {
                                 sps.VirtualTimeOriginator.ShiftVirtualTime();
                                 Print.VirtualTime();
                                 Terminated = true;
-                                break;
-                            }
-                        case "MANUAL":
-                            {
-                                sps.VirtualTimeOriginator.ShiftVirtualTime();
-                                Print.VirtualTime();
                                 break;
                             }
                         default:
