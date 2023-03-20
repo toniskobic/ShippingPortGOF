@@ -430,13 +430,13 @@ namespace ShippingPortGOF
 
             if (sps.HeaderPrint)
             {
-                Print.MooringHeader();
+                Print.MooringOfTypeHeader();
             }
             PrintMooringsOfType(moorings, type, mooringsStatus);
             if (sps.FooterPrint)
             {
                 int rowsCount = moorings.Count;
-                Print.Footer(rowsCount);
+                Print.MooringOfTypeFooter(rowsCount);
             }
         }
 
@@ -490,17 +490,17 @@ namespace ShippingPortGOF
                 string type = mooring.Accept(mooringVisitor);
                 switch (type)
                 {
-                    case "PU":
+                    case "PA":
                         {
                             passengerMoorings++;
                             break;
                         }
-                    case "PO":
+                    case "BU":
                         {
                             businessMoorings++;
                             break;
                         }
-                    case "OS":
+                    case "OT":
                         {
                             otherMoorings++;
                             break;
@@ -528,15 +528,15 @@ namespace ShippingPortGOF
             ShippingPortSingleton sps = ShippingPortSingleton.GetInstance();
             if (sps.SequenceNumberPrint)
             {
-                Print.SumTakenMoorings(1, "PU", passengerMoorings);
-                Print.SumTakenMoorings(2, "PO", businessMoorings);
-                Print.SumTakenMoorings(3, "OS", otherMoorings);
+                Print.SumTakenMoorings(1, "PA", passengerMoorings);
+                Print.SumTakenMoorings(2, "BU", businessMoorings);
+                Print.SumTakenMoorings(3, "OT", otherMoorings);
             }
             else
             {
-                Print.SumTakenMoorings("PU", passengerMoorings);
-                Print.SumTakenMoorings("PO", businessMoorings);
-                Print.SumTakenMoorings("OS", otherMoorings);
+                Print.SumTakenMoorings("PA", passengerMoorings);
+                Print.SumTakenMoorings("BU", businessMoorings);
+                Print.SumTakenMoorings("OT", otherMoorings);
             }
         }
 
@@ -767,7 +767,7 @@ namespace ShippingPortGOF
                             {
                                 sps.VirtualTimeOriginator.ShiftVirtualTime();
                                 Print.VirtualTime();
-                                PrintTakenMoorings(input.Substring(3));
+                                PrintTakenMoorings(input.Substring(15));
                                 break;
                             }
                         case string input when new Regex(Constants.ShipStatus).IsMatch(input):

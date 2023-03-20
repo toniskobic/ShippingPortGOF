@@ -2,15 +2,15 @@
 {
     public static class Constants
     {
-        public static string[] MooringTypes { get; } = { "PU", "PO", "OS" };
+        public static string[] MooringTypes { get; } = { "PA", "BU", "OT" };
 
-        public static string[] ShipTypes { get; } = { "TR", "KA", "KL", "KR", "RI", "TE", "JA", "BR", "RO" };
+        public static string[] ShipTypes { get; } = { "FE", "CA", "PS", "CR", "FI", "FR", "YA", "BO", "DI" };
 
-        public static string[] PassengerShips { get; } = { "TR", "KA", "KL", "KR" };
+        public static string[] PassengerShips { get; } = { "FE", "CA", "PS", "CR" };
 
-        public static string[] BusinessShips { get; } = { "RI", "TE" };
+        public static string[] BusinessShips { get; } = { "FI", "FR" };
 
-        public static string[] OtherShips { get; } = { "JA", "BR", "RO" };
+        public static string[] OtherShips { get; } = { "YA", "BO", "DI" };
 
         public static string InputArguments { get; } = @"^(?:(-s [a-zA-Z_0-9.]+\.csv)(?!.*\1) )?"
           + @"(-(?:(?:dm)|[pmbdc]){1} [a-zA-Z_0-9.]+\.csv)(?!.*\2)(?: (-s [a-zA-Z_0-9.]+\.csv)(?!.*\3))?"

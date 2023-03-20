@@ -130,13 +130,13 @@ namespace ShippingPortGOF.Static
         public static void MooringOfType(int id, string type, string status, string time)
         {
             ShippingPortSingleton sps = ShippingPortSingleton.GetInstance();
-            sps.Controller.SetModelState(string.Format("|{0,10}|{1,-10}|{2,-10}|{3,-10}|", id, type, status, time));
+            sps.Controller.SetModelState(string.Format("|{0,10}|{1,-10}|{2,-10}|{3,-45}|", id, type, status, time));
         }
 
         public static void MooringOfType(int sequenceNumber, int id, string type, string status, string time)
         {
             ShippingPortSingleton sps = ShippingPortSingleton.GetInstance();
-            sps.Controller.SetModelState(string.Format("|{0,10}|{1,10}|{2,-10}|{3,-10}|{4,-10}|",
+            sps.Controller.SetModelState(string.Format("|{0,10}|{1,10}|{2,-10}|{3,-10}|{4,-45}|",
                 sequenceNumber, id, type, status, time));
         }
 
@@ -145,10 +145,10 @@ namespace ShippingPortGOF.Static
             ShippingPortSingleton sps = ShippingPortSingleton.GetInstance();
             if (ShippingPortSingleton.GetInstance().SequenceNumberPrint)
             {
-                sps.Controller.SetModelState($"--------------------Moorings status--------------------");
+                sps.Controller.SetModelState($"--------------------Moorings status---------------------");
                 sps.Controller.SetModelState(string.Format("|{0,10}|{1,10}|{2,-10}|{3,-10}|{4,-10}|",
                 "No.", "ID", "Label", "Type", "Status"));
-                sps.Controller.SetModelState($"-------------------------------------------------------");
+                sps.Controller.SetModelState($"--------------------------------------------------------");
             }
             else
             {
@@ -176,6 +176,42 @@ namespace ShippingPortGOF.Static
             }
         }
 
+        public static void MooringOfTypeHeader()
+        {
+            ShippingPortSingleton sps = ShippingPortSingleton.GetInstance();
+            if (ShippingPortSingleton.GetInstance().SequenceNumberPrint)
+            {
+                sps.Controller.SetModelState($"--------------------------------------Moorings status--------------------------------------");
+                sps.Controller.SetModelState(string.Format("|{0,10}|{1,10}|{2,-10}|{3,-10}|{4,-45}|",
+                "No.", "ID", "Type", "Status", "Time"));
+                sps.Controller.SetModelState($"-------------------------------------------------------------------------------------------");
+            }
+            else
+            {
+                sps.Controller.SetModelState($"---------------------------------Moorings status--------------------------------");
+                sps.Controller.SetModelState(string.Format("|{0,10}|{1,-10}|{2,-10}|{3,-45}|", "ID", "Type", "Status", "Time"));
+                sps.Controller.SetModelState($"--------------------------------------------------------------------------------");
+            }
+        }
+
+        public static void MooringOfTypeFooter(int rowCount)
+        {
+            ShippingPortSingleton sps = ShippingPortSingleton.GetInstance();
+            if (sps.SequenceNumberPrint)
+            {
+                sps.Controller.SetModelState($"-------------------------------------------------------------------------------------------");
+                sps.Controller.SetModelState(string.Format("|{0,87}{1, 0}|", "Number of records :", rowCount));
+                sps.Controller.SetModelState($"-------------------------------------------------------------------------------------------");
+
+            }
+            else
+            {
+                sps.Controller.SetModelState($"--------------------------------------------------------------------------------");
+                sps.Controller.SetModelState(string.Format("|{0,76}{1, 0}|", "Number of records :", rowCount));
+                sps.Controller.SetModelState($"--------------------------------------------------------------------------------");
+            }
+        }
+
         public static void HeaderNotAvailableMooring()
         {
             ShippingPortSingleton sps = ShippingPortSingleton.GetInstance();
@@ -188,7 +224,7 @@ namespace ShippingPortGOF.Static
             }
             else
             {
-                sps.Controller.SetModelState($"------------Count of taken moorings by type------------");
+                sps.Controller.SetModelState($"-------Count of taken moorings by type-------");
                 sps.Controller.SetModelState(string.Format("|{0,-20}|{1,22}|",
                 "Type", "Taken count"));
                 sps.Controller.SetModelState($"---------------------------------------------");

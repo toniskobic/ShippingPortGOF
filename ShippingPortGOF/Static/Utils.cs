@@ -25,17 +25,17 @@ namespace ShippingPortGOF.Static
             {
                 case string shipType when Constants.PassengerShips.Contains(shipType):
                     {
-                        mooring = "PU";
+                        mooring = "PA";
                         break;
                     }
                 case string shipType when Constants.BusinessShips.Contains(shipType):
                     {
-                        mooring = "PO";
+                        mooring = "BU";
                         break;
                     }
                 case string shipType when Constants.OtherShips.Contains(shipType):
                     {
-                        mooring = "OS";
+                        mooring = "OT";
                         break;
                     }
             }
@@ -51,17 +51,17 @@ namespace ShippingPortGOF.Static
             string[]? ships = null;
             switch (mooring.Type)
             {
-                case "PU":
+                case "PA":
                     {
                         ships = Constants.PassengerShips;
                         break;
                     }
-                case "PO":
+                case "BU":
                     {
                         ships = Constants.BusinessShips;
                         break;
                     }
-                case "OS":
+                case "OT":
                     {
                         ships = Constants.OtherShips;
                         break;
@@ -85,19 +85,19 @@ namespace ShippingPortGOF.Static
 
             switch (type)
             {
-                case "PU":
+                case "PA":
                     {
-                        check = sps.ShippingPort.PassengerMoorings > moorings.FindAll(v => ((Mooring)v).Type == "PU").Count;
+                        check = sps.ShippingPort.PassengerMoorings > moorings.FindAll(v => ((Mooring)v).Type == "PA").Count;
                         break;
                     }
-                case "PO":
+                case "BU":
                     {
-                        check = sps.ShippingPort.BusinessMoorings > moorings.FindAll(v => ((Mooring)v).Type == "PO").Count;
+                        check = sps.ShippingPort.BusinessMoorings > moorings.FindAll(v => ((Mooring)v).Type == "BU").Count;
                         break;
                     }
-                case "OS":
+                case "OT":
                     {
-                        check = sps.ShippingPort.OtherMoorings > moorings.FindAll(v => ((Mooring)v).Type == "OS").Count;
+                        check = sps.ShippingPort.OtherMoorings > moorings.FindAll(v => ((Mooring)v).Type == "OT").Count;
                         break;
                     }
             }
