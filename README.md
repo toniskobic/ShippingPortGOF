@@ -36,7 +36,7 @@ PS C:\Users\User\source\repos\ShippingPortGOF\data> & "C:\Users\User\source\repo
 -s - Option that is optional and accepts the file needed for loading the schedules.
 
 ## Ships and moorings types
-Vrsta veza | Oznaka vrste veza | Vrsta broda | Oznaka vrste broda
+Mooring type | Mooring type abbreviation | Ship type | Ship type abbreviation
 ------------ | ------------------- | ----- | ---------------------
 Passenger | PA | Ferry | FE
 ||| Catamaran | CA
