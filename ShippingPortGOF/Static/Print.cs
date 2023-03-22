@@ -116,45 +116,70 @@ namespace ShippingPortGOF.Static
             sps.Controller.SetModelState("ShippingPortGOF Commands Manual:");
             sps.Controller.SetTextColor(ConsoleColor.Green);
             sps.Controller.SetModelState("STATUS");
+            sps.Controller.SetModelState("Description: Overview of the status (available or taken) " +
+                "of ship mooring at the moment of application virtual time.");
             sps.Controller.SetModelState(Environment.NewLine);
             sps.Controller.SetTextColor(ConsoleColor.Green);
             sps.Controller.SetModelState("VIRTUAL TIME dd.mm.yyyy. hh:mm:ss");
+            sps.Controller.SetModelState("Description: Changes virtual time with entered date and time.");
             sps.Controller.SetModelState(Environment.NewLine);
             sps.Controller.SetTextColor(ConsoleColor.Green);
             sps.Controller.SetModelState("MOORINGS [mooring_type] [status] [datetime_from] [datetime_until]");
             sps.Controller.SetModelState("Statuses: T - taken, A - available");
             sps.Controller.SetModelState("Datetime format: dd.mm.yyyy. hh:mm:ss");
+            sps.Controller.SetModelState("Description: Overview of taken (T) or available (A) ship moorings " +
+                "of a certain type in a given time range where the time from and to when the mooring " +
+                "is taken (T) or available (A) is also printed.");
             sps.Controller.SetModelState(Environment.NewLine);
             sps.Controller.SetTextColor(ConsoleColor.Green);
             sps.Controller.SetModelState("LOAD RESERVATIONS [filename].csv");
+            sps.Controller.SetModelState("Description: Loads the reservation request file.");
             sps.Controller.SetModelState(Environment.NewLine);
             sps.Controller.SetTextColor(ConsoleColor.Green);
             sps.Controller.SetModelState("RESERVED MOORING [ship ID]");
+            sps.Controller.SetModelState("Description: Creates a request for enabling/permitting mooring " +
+                "to a ship with a specified ID to his reserved mooring.");
             sps.Controller.SetModelState(Environment.NewLine);
             sps.Controller.SetTextColor(ConsoleColor.Green);
             sps.Controller.SetModelState("NON RESERVED MOORING [ship ID] [duration in hours]");
+            sps.Controller.SetModelState("Description: Creates a request for enabling/permitting mooring " +
+                "to a ship with a specified ID to a non reserved mooring, where the duration of the " +
+                "mooring in hours is specified.");
             sps.Controller.SetModelState(Environment.NewLine);
             sps.Controller.SetTextColor(ConsoleColor.Green);
-            sps.Controller.SetModelState("CHANNEL [ship ID] [channel frequency]");
+            sps.Controller.SetModelState("CHANNEL [ship ID] [channel frequency] [Q]");
+            sps.Controller.SetModelState("Description: Connects a ship with a specified ID to a specified " +
+                "communication channel where that ship then has available all information sent over " +
+                "that channel. If argument \"Q\" is specified, command disconnects the ship from a specified channel.");
             sps.Controller.SetModelState(Environment.NewLine);
             sps.Controller.SetTextColor(ConsoleColor.Green);
             sps.Controller.SetModelState("PRINT SETTINGS [H | F | SN]");
+            sps.Controller.SetModelState("Description: Sets table print settings. The command can receive " +
+                "several different options ( H - header, F - footer, SN - sequence number). The order " +
+                "of abbreviations is arbitrary.");
             sps.Controller.SetModelState(Environment.NewLine);
             sps.Controller.SetTextColor(ConsoleColor.Green);
             sps.Controller.SetModelState("TAKEN MOORINGS dd.mm.yyyy. hh:mm");
+            sps.Controller.SetModelState("Description: Prints the total number of taken ship moorings by type at a given time.");
             sps.Controller.SetModelState(Environment.NewLine);
             sps.Controller.SetTextColor(ConsoleColor.Green);
             sps.Controller.SetModelState("BACKUP \"[name]\"");
+            sps.Controller.SetModelState("Description: Performs a backup of the current state of occupancy " +
+                "of all ship moorings and the current application virtual time.");
             sps.Controller.SetModelState(Environment.NewLine);
             sps.Controller.SetTextColor(ConsoleColor.Green);
             sps.Controller.SetModelState("RESTORE \"[name]\"");
+            sps.Controller.SetModelState("Description: Returns the state of ship moorings to one of the specified " +
+                "saved mooring occupancy states and associated virtual time.");
             sps.Controller.SetModelState(Environment.NewLine);
             sps.Controller.SetTextColor(ConsoleColor.Green);
             sps.Controller.SetModelState("SHIP [ship ID]");
+            sps.Controller.SetModelState("Description: Checks the status of the ship with the specified ID in the " +
+                "current virtual time.");
             sps.Controller.SetModelState(Environment.NewLine);
             sps.Controller.SetTextColor(ConsoleColor.Green);
             sps.Controller.SetModelState("Q");
-            sps.Controller.SetModelState("Description: Program termination.");
+            sps.Controller.SetModelState("Description: Terminates the program.");
             sps.Controller.SetModelState(Environment.NewLine);
         }
 
