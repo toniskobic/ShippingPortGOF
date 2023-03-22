@@ -20,5 +20,13 @@
         {
             Model?.SetState(state);
         }
+
+        public void SetTextColor(ConsoleColor color)
+        {
+            if (View != null)
+            {
+                View.ForegroundColor = color;
+            }
+        }
     }
 }

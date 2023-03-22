@@ -1,24 +1,39 @@
 ﻿using ShippingPortGOF.Observer;
-using ShippingPortGOF.Singleton;
 
 namespace ShippingPortGOF.MVC
 {
     public class View : IObserver
     {
+        public ConsoleColor ForegroundColor
+        {
+            get
+            {
+                return Console.ForegroundColor;
+            }
+            set
+            {
+                Console.ForegroundColor = value;
+            }
+        }
+
         public void Update(ISubject s)
         {
-            ShippingPortSingleton sps = ShippingPortSingleton.GetInstance();
             string state = s.GetState()!;
             if (state.StartsWith("ERROR"))
             {
-                Console.ForegroundColor = ConsoleColor.Red;
+                ForegroundColor = ConsoleColor.Red;
             }
-            else
+            WriteLine(state);
+            if (ForegroundColor != ConsoleColor.White)
             {
-                Console.ForegroundColor = ConsoleColor.White;
+                ForegroundColor = ConsoleColor.White;
             }
-            Console.WriteLine(state);
             Thread.Sleep(30);
+        }
+
+        private void WriteLine(string message)
+        {
+            Console.WriteLine(message);
         }
     }
 }

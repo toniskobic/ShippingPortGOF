@@ -111,7 +111,51 @@ namespace ShippingPortGOF.Static
 
         public static void Manual()
         {
-
+            ShippingPortSingleton sps = ShippingPortSingleton.GetInstance();
+            sps.Controller.SetTextColor(ConsoleColor.Yellow);
+            sps.Controller.SetModelState("ShippingPortGOF Commands Manual:");
+            sps.Controller.SetTextColor(ConsoleColor.Green);
+            sps.Controller.SetModelState("STATUS");
+            sps.Controller.SetModelState(Environment.NewLine);
+            sps.Controller.SetTextColor(ConsoleColor.Green);
+            sps.Controller.SetModelState("VIRTUAL TIME dd.mm.yyyy. hh:mm:ss");
+            sps.Controller.SetModelState(Environment.NewLine);
+            sps.Controller.SetTextColor(ConsoleColor.Green);
+            sps.Controller.SetModelState("MOORINGS [mooring_type] [status] [datetime_from] [datetime_until]");
+            sps.Controller.SetModelState("Statuses: T - taken, A - available");
+            sps.Controller.SetModelState("Datetime format: dd.mm.yyyy. hh:mm:ss");
+            sps.Controller.SetModelState(Environment.NewLine);
+            sps.Controller.SetTextColor(ConsoleColor.Green);
+            sps.Controller.SetModelState("LOAD RESERVATIONS [filename].csv");
+            sps.Controller.SetModelState(Environment.NewLine);
+            sps.Controller.SetTextColor(ConsoleColor.Green);
+            sps.Controller.SetModelState("RESERVED MOORING [ship ID]");
+            sps.Controller.SetModelState(Environment.NewLine);
+            sps.Controller.SetTextColor(ConsoleColor.Green);
+            sps.Controller.SetModelState("NON RESERVED MOORING [ship ID] [duration in hours]");
+            sps.Controller.SetModelState(Environment.NewLine);
+            sps.Controller.SetTextColor(ConsoleColor.Green);
+            sps.Controller.SetModelState("CHANNEL [ship ID] [channel frequency]");
+            sps.Controller.SetModelState(Environment.NewLine);
+            sps.Controller.SetTextColor(ConsoleColor.Green);
+            sps.Controller.SetModelState("PRINT SETTINGS [H | F | SN]");
+            sps.Controller.SetModelState(Environment.NewLine);
+            sps.Controller.SetTextColor(ConsoleColor.Green);
+            sps.Controller.SetModelState("TAKEN MOORINGS dd.mm.yyyy. hh:mm");
+            sps.Controller.SetModelState(Environment.NewLine);
+            sps.Controller.SetTextColor(ConsoleColor.Green);
+            sps.Controller.SetModelState("BACKUP \"[name]\"");
+            sps.Controller.SetModelState(Environment.NewLine);
+            sps.Controller.SetTextColor(ConsoleColor.Green);
+            sps.Controller.SetModelState("RESTORE \"[name]\"");
+            sps.Controller.SetModelState(Environment.NewLine);
+            sps.Controller.SetTextColor(ConsoleColor.Green);
+            sps.Controller.SetModelState("SHIP [ship ID]");
+            sps.Controller.SetModelState(Environment.NewLine);
+            sps.Controller.SetTextColor(ConsoleColor.Green);
+            sps.Controller.SetModelState("Q");
+            sps.Controller.SetModelState("Description: Program termination.");
+            sps.Controller.SetModelState(Environment.NewLine);
         }
 
         public static void Mooring(int id, string label, string type, string status)
