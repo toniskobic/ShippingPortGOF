@@ -2,6 +2,10 @@
 
 ShippingPortGOF is a C# .NET 7.0 Console application made as part of the faculty graduate studies course "Design Patterns". This application showcases the use of multiple GOF Design Patterns (Gamma, E.; Helm, R.; Johnson, R.; Vlissides, J. Design Patterns: Elements of Reusable of Object-Oriented Design. Addison-Wesley, Reading, MA, 1995.). Also, this application is designed following the MVC (Model-View-Controller) software architectural pattern. 
 
+This application simulates ship port management. The port consists of several piers, and each pier contains moorings of different types. Each mooring must belong to a pier. Each mooring with the corresponding type has its own characteristics (e.g. maximum ship length, maximum ship width). The shipping port can accommodate
+different types of ships, but a certain type of ship can only be moored to the corresponding type of mooring.
+
+The Harbour Master's Office uses a simulation of a VHF radio connection for communication with the ships using a certain number of predefined channels (representing radio frequencies) that are known to ships. Ships must be in communication with the Harbour Master's Office to request a mooring.
 ## Used GOF Design Patterns:
 
 - Singleton
